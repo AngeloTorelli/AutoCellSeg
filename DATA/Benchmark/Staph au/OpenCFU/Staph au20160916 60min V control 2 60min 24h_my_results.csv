@@ -1,0 +1,9 @@
+Full_Path, IsValid,X,Y,ROI,Colour_group,N_in_clust,Area,Radius,Hue,Saturation,Rmean,Gmean,Bmean,Rsd,Gsd,Bsd, Comment
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 0,3948.5,2676.5,1,0,1,419,12,52,141,226.229,215.642,154.308,19.9811,18.8521,26.5736, "2016-12-07 [2:24:27 PM]: no comment"
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 1,1491.25,2318.25,1,0,1,2835,30,46,153,197.163,162.074,49.0025,11.7805,7.21347,21.7665, "2016-12-07 [2:24:27 PM]: no comment"
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 1,1270,2116,1,0,1,2884,31,46,147,197.506,164.922,52.7372,10.8647,6.62841,23.069, "2016-12-07 [2:24:27 PM]: no comment"
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 1,1724.1,2070.7,1,0,1,3103,32,44,170,190.357,150.05,37.6184,13.7806,9.30709,19.2813, "2016-12-07 [2:24:27 PM]: no comment"
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 1,2414,1703.5,1,0,1,3284,33,44,166,199.311,157.107,41.9013,15.0419,11.3281,22.0024, "2016-12-07 [2:24:27 PM]: no comment"
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 1,3067.27,1659.15,1,0,1,3268,33,48,163,213.93,185.464,67.8626,10.7508,9.29337,29.646, "2016-12-07 [2:24:27 PM]: no comment"
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 1,1722.75,1287.25,1,0,1,3386,33,44,168,188.813,147.319,38.7141,14.2268,9.27199,17.1026, "2016-12-07 [2:24:27 PM]: no comment"
+"C:\micseg\DATA\Benchmark\Staph au\Staph au20160916 60min V control 2 60min 24h.JPG", 1,2179.5,1253.5,1,0,1,3290,32,44,172,195.979,153.125,37.5277,14.73,10.5752,20.1248, "2016-12-07 [2:24:27 PM]: no comment"

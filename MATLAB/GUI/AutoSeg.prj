@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="1386109527" file="C:\micseg\MATLAB\GUI\AutoSeg.prj" location="C:\micseg\MATLAB\GUI" name="AutoSeg" preferred-package-location="C:\micseg\MATLAB\GUI\AutoSeg\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="1865201370" file="C:\micseg\MATLAB\GUI\AutoSeg.prj" location="C:\micseg\MATLAB\GUI" name="AutoSeg" preferred-package-location="C:\micseg\MATLAB\GUI\AutoSeg\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>AutoSeg</param.appname>
     <param.icon>${PROJECT_ROOT}\AutoSeg_resources\icon.ico</param.icon>
     <param.icons>
@@ -77,16 +77,8 @@
     </fileset.resources>
     <fileset.package />
     <fileset.depfun>
-      <file>C:\micseg\MATLAB\code\manualAddRem.m</file>
+      <file>${PROJECT_ROOT}\BacteriaColonySeg.m</file>
       <file>${PROJECT_ROOT}\BacteriaColonySegmenter.fig</file>
-      <file>C:\zmf\code\aiwatershed.m</file>
-      <file>C:\zmf\code\BacteriaColonySeg.m</file>
-      <file>C:\zmf\code\ExtractObjImage.m</file>
-      <file>C:\zmf\code\fastMarchingInd.m</file>
-      <file>C:\zmf\code\fullimageWS.m</file>
-      <file>C:\zmf\code\im_norm.m</file>
-      <file>C:\zmf\code\imoverlay.m</file>
-      <file>C:\zmf\code\removebadBLOBS.m</file>
     </fileset.depfun>
     <build-deliverables>
       <file location="${PROJECT_ROOT}\AutoSeg\for_testing" name="splash.png" optional="false">C:\micseg\MATLAB\GUI\AutoSeg\for_testing\splash.png</file>

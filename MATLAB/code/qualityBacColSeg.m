@@ -36,7 +36,9 @@ L          = imclearborder(logical(L));
 L          = bwpropfilt(L, 'Area', [400 100000000]);
 I(:,:,3)   = L ;
 
-q = -1*ones(1, size(I,3));
+q      = -1*ones(1, size(I,3));
+y1_hat = -1*ones(1, size(I,3));
+y2_hat = -1*ones(1, size(I,3));
 
 for i = 1 : size(I,3)
     obj_count  = 0;
@@ -53,14 +55,14 @@ for i = 1 : size(I,3)
         end
         
     end
-    im_dif = im_tmp - gd;
-    cd     = numel(find(im_dif ~= 0));
-    q1_hat = abs(gd_count - obj_count)/gd_count;
-    q2_hat = cd / max(length(find(gd) > 0), ...
+    im_dif    = im_tmp - gd;
+    cd        = numel(find(im_dif ~= 0));
+    q1_hat    = abs(gd_count - obj_count)/gd_count;
+    q2_hat    = cd / max(length(find(gd) > 0), ...
                   length(find(im_tmp) > 0));
-    y1_hat = evalmf(q1_hat, [0 pars.p1], 'zmf');
-    y2_hat = evalmf(q2_hat, [0 pars.p2], 'zmf');
-    q(i)   = y1_hat * y2_hat ;
+    y1_hat(i) = evalmf(q1_hat, [0 pars.p1], 'zmf');
+    y2_hat(i) = evalmf(q2_hat, [0 pars.p2], 'zmf');
+    q(i)      = y1_hat(i) * y2_hat(i) ;
     
 end
 

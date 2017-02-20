@@ -433,8 +433,8 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
         else                
             handles.BW{i} = BW | handles.BW{i};
         end
+        guidata(hObject, handles)
     end
-    guidata(hObject, handles)
 
 
 function updatePageText(hObject, eventdata, handles)
@@ -492,6 +492,7 @@ function handles = visualizeData(hObject, eventdata, handles)
                     y = 2;
                 end
             end
+            set(gcf,'pointer','watch')
             set(handles.nextPicButton, 'Enable', 'Off')
             set(handles.prevPicButton, 'Enable', 'Off')
             for i  = handles.maxPics*handles.iImg+1 : ...
@@ -519,7 +520,8 @@ function handles = visualizeData(hObject, eventdata, handles)
                 title(['\color{white}' handles.data(i).name]);
                 set(findall(gca, 'type', 'text'), 'visible', 'on')
                 drawnow();    
-            end           
+            end
+            set(gcf,'pointer','arrow')
             if handles.iImg == 0
                 set(handles.prevPicButton, 'Enable', 'Off')
             else
@@ -662,8 +664,10 @@ function singlePicture(hObject, eventdata, hGui, i)
                                 handles = showResults(hObject, eventdata, handles);
                         end
                         if isfield(handles, 'done') == 1 && handles.done == true
-                            title('This is the result. Add segments with a left click, remove segments with a right click and end the process with a middle click.')
+                            title(['This is the result \it n = ' num2str(max(max(bwlabel(handles.BW{i})))) ...
+                                '. \rm Add segments with a left click, remove segments with a right click and end the process with a middle click.'])
                             handles.BW{i} = manualAddRem(handles.BW{i}, handles.imgs{i}, handles.pars);
+%                             title(['\it n = ' num2str(max(max(bwlabel(handles.BW{i}))))])
                             wfig = gcf;
                             if strcmp(wfig.Name, 'AutoSeg') == 1
                                 break
@@ -698,7 +702,9 @@ function singlePicture(hObject, eventdata, hGui, i)
                 imshow(handles.results{i});
                 set(gca,'visible','off');
             end
-            guidata(hObject, handles);
+            if ~handles.aborted                
+                guidata(hObject, handles);
+            end
     end
     
 function handles = showResults(hObject, eventdata, handles)
@@ -716,7 +722,14 @@ function handles = showResults(hObject, eventdata, handles)
     else
         handles.minArea = min(handles.minArea, min([preSelectInfo.Area]));
         handles.maxArea = max(handles.maxArea, max([preSelectInfo.Area]));
-    end                 
+    end
+    if  sum(sum(handles.BW{handles.indexImg})) > 0
+        seg_count = max(max(bwlabel(handles.BW{handles.indexImg})));
+    else
+        seg_count = 0;
+    end
+    handles.areavec{i}      = [preSelectInfo.Area];
+    handles.seg_count{i}    = seg_count;
     
     %% Display results
     if isfield(handles, 'strarray') == 0
@@ -890,6 +903,7 @@ function runButton_Callback(hObject, eventdata, handles)
 % hObject    handle to nextPicButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    set(handles.runButton,'Enable','off')
     handles = checkProcessRadioButtons(hObject, eventdata, handles);
     if ~handles.aborted
         set(handles.runButton,'Enable','off')
@@ -909,7 +923,10 @@ function resetButton_Callback(hObject, eventdata, handles)
     set(handles.showresultsbutton,'Enable','off')
     set(handles.saveButton,'Enable','off')
     set(handles.runButton,'Enable','off')
-    set(handles.resetButton,'Enable','off')     
+    set(handles.resetButton,'Enable','off')
+    set(handles.figure1, 'HandleVisibility', 'off');
+    close all;
+    set(handles.figure1, 'HandleVisibility', 'on');
     guidata(hObject, handles)
 
 % --- Executes on button press in saveButton.
@@ -1055,10 +1072,25 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
     ylabel('KDE', 'FontSize', 20)
     handles.resultsTitle{1} = [handles.control ' vs. ' handles.test ' (using KDE)'];
     title([handles.resultsTitle{1} ' for ' num2str(pars.im_name{1}(handles.inds{1}(2):(end-4)))], 'FontSize', 20)
+    
+    % Write the strings for control and test
+    ctrind = find(cellfun('length',regexp(handles.strarray,handles.control)) == 1);
+    tstind = find(cellfun('length',regexp(handles.strarray,handles.test)) == 1);
+    for i = 1 : handles.ctrlen
+        handles.nstrarray{ctrind(i)} = [handles.strarray{ctrind(i)} ...
+            num2str(i)];
+    end
+    for i = 1 : handles.lgtlen
+        handles.nstrarray{tstind(i)} = [handles.strarray{tstind(i)} ...
+            num2str(i)];
+    end
+    
     for i = 1 : length(handles.areavec)
         if ~isempty(handles.areavec{i})
             % MAKE IT 1 to 4
-            strar(i) = cellstr([char(handles.strarray{i}) num2str(i) ' n = ' num2str(handles.seg_count{i})]);
+            strar(i) = cellstr([char(handles.nstrarray{i}) ' n = ' num2str(handles.seg_count{i})]);
+        else
+            strar(i) = cellstr([char(handles.nstrarray{i}) ' n = 0' ]);
         end
     end
     legend(strar, 'Location', 'NorthEast')
@@ -1213,7 +1245,8 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
             'Please wait while the results are being created (60%)')
         
         %PLOT 4
-        CtAA  (CtAA == 0) = [];
+        CtAA  (CtAA == 0)  = [];
+        LiAA  (LiAA == -1) = 0; 
         figure('Visible','off');
         for k = 1 : min(l1,l2)
             % Total absolute area normalized to 1 plot
@@ -1250,10 +1283,13 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         if numel(aLic) > 0
             aLic  (aLic == 0) = [];
         end
+        aLic(aLic == -1) = 0;
+
         
         if numel(aCtc) > 0
             aCtc  (aCtc == 0) = [];
         end
+        aCtc(aCtc == -1) = 0;
         
         plst1 = {'g-o', 'r-o', 'b-o', 'c-o', 'm-o', 'k-o', 'y-o', ...
             'g--o', 'r--o', 'b--o', 'c--o', 'm--o', 'k--o', 'y--o'};

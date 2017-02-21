@@ -1212,27 +1212,72 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         
         %PLOT 3
         figure('Visible','off');
-        for k = 1 : min(l1,l2)
-            % Total absolute area plot
-            plot(t,[CtAA(k);LiAA(k)], plst{k} ,'LineWidth',2, 'MarkerSize',20)
-            grid on
-            hold on
-            strtmp = ['Exp ' num2str(k)];
-            strfig{k} = ['Exp ' num2str(k)];
+        if ~isempty(LiAA) && ~isempty(CtAA)
+            for k = 1 : min(l1,l2)
+                % Total absolute area plot
+                plot(t,[CtAA(k);LiAA(k)], plst{k} ,'LineWidth',2, 'MarkerSize',20)
+                grid on
+                hold on
+                strtmp = ['Exp ' num2str(k)];
+                strfig{k} = ['Exp ' num2str(k)];
+            end
+        elseif isempty(LiAA) && ~isempty(CtAA)
+            for k = 1 : length(CtAA)
+                % Total absolute area plot
+                plot(t,[CtAA(k)], plst{k} ,'LineWidth',2, 'MarkerSize',20)
+                grid on
+                hold on
+                strtmp = ['Exp ' num2str(k)];
+                strfig{k} = ['Exp ' num2str(k)];
+            end
+        elseif ~isempty(LiAA) && isempty(CtAA)
+            for k = 1 : length(CtAA)
+                % Total absolute area plot
+                plot(t,[LiAA(k)], plst{k} ,'LineWidth',2, 'MarkerSize',20)
+                grid on
+                hold on
+                strtmp = ['Exp ' num2str(k)];
+                strfig{k} = ['Exp ' num2str(k)];
+            end   
+        else
+            Error('No control or test images')            
         end
         xlabel(['1: ' handles.control ' , ' ' 2: ' handles.test])
         ylabel('Normalized Colony Size')
         xlim([0 3])
-        ylim([1500 5000])
+        if ~isempty(LiAA) && ~isempty(CtAA)
+            ylim([min(CtAA,LiAA) max(LiAA,CtAA)])
+        elseif isempty(LiAA) && ~isempty(CtAA)
+            ylim([min(CtAA) max(CtAA)])
+        elseif ~isempty(LiAA) && isempty(CtAA)
+            ylim([min(LiAA) max(LiAA)])
+        else
+            error('No test or control images')
+        end
         set(gca,'XTick', [1 2], 'FontWeight', 'bold', 'FontSize', 20)
         handles.resultsTitle{2} = 'Normalized Absolute Areas';
         title([handles.resultsTitle{2} ' (' fname ')'])
-        text(t(end), 0.95*max(max(CtAA),max(LiAA)), ['A_C_t_r = ' ...
-            num2str(floor(median(CtAA)))], 'Color', [.7 .7 .7], ...
-            'FontSize', 20)
-        text(t(end), 0.9*max(max(CtAA),max(LiAA)), ['A_L_i = ' ...
-            num2str(floor(median(LiAA)))], 'Color', [.7 .7 .7], ...
-            'FontSize', 20)
+        
+        if ~isempty(LiAA) && ~isempty(CtAA)
+            text(t(end), 0.95*max(max(CtAA),max(LiAA)), ['A_C_t_r = ' ...
+                num2str(floor(median(CtAA)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+            text(t(end), 0.9*max(max(CtAA),max(LiAA)), ['A_L_i = ' ...
+                num2str(floor(median(LiAA)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        elseif ~isempty(CtAA) && isempty(LiAA)
+            text(t(end), 0.95*max(CtAA), ['A_C_t_r = ' ...
+                num2str(floor(median(CtAA)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        elseif isempty(CtAA) && ~isempty(LiAA)
+            text(t(end), 0.9*max(max(CtAA),max(LiAA)), ['A_L_i = ' ...
+                num2str(floor(median(LiAA)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        else
+            Error('No control or test images')            
+        end
+            
+       
         legend(strfig, 'Location', 'NorthWest')
         % Save results in handles.results
         screen_size     = get(0, 'ScreenSize');
@@ -1261,13 +1306,37 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         xlabel(['1: ' handles.control ' , ' ' 2: ' handles.test])
         ylabel('Normalized Colony Size')
         xlim([0 3])
-        ylim([min(LiAA ./ CtAA)-0.1 max(max(LiAA./CtAA)+0.1,1.1)])
+        
+        if ~isempty(LiAA) && ~isempty(CtAA)
+            ylim([min(LiAA ./ CtAA)-0.1 max(max(LiAA./CtAA)+0.1,1.1)])
+        elseif isempty(LiAA) && ~isempty(CtAA)
+            ylim([min(CtAA)-0.1 max(max(CtAA)+0.1,1.1)])
+        elseif ~isempty(LiAA) && isempty(CtAA)
+            ylim([min(LiAA)-0.1 max(max(LiAA)+0.1,1.1)])
+        else
+            error('No test or control image to plot')
+        end
+        
         set(gca,'XTick', [1 2], 'FontWeight', 'bold', 'FontSize', 20)
         handles.resultsTitle{3} = 'Absolute Areas Normalized to 1';
         title([handles.resultsTitle{3} ' (' fname ')'])
-        text(t(2), 0.6, ['MeanVal  = ' ...
-            num2str(mean(LiAA./CtAA),2)], 'Color', [.7 .7 .7], ...
-            'FontSize', 20)
+        
+        if ~isempty(LiAA) && ~isempty(CtAA)
+            text(t(2), 0.6, ['MeanVal  = ' ...
+                num2str(mean(LiAA./CtAA),2)], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        elseif isempty(LiAA) && ~isempty(CtAA)
+            text(t(2), 0.6, ['MeanVal  = ' ...
+                num2str(mean(CtAA),2)], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        elseif ~isempty(LiAA) && isempty(CtAA)
+            text(t(2), 0.6, ['MeanVal  = ' ...
+                num2str(mean(LiAA),2)], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        else
+            error('No test or control image to plot')
+        end
+                
         legend(strfig, 'Location', 'SouthWest')
         % Save results in handles.results
         screen_size     = get(0, 'ScreenSize');
@@ -1307,17 +1376,43 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         xlabel(['1: ' handles.control ' , ' ' 2: ' handles.test])
         ylabel('Colony count')
         xlim([0 3])
-        ylim([min(min(aLic,aCtc))-1 max(max(aLic,aCtc))+1])
+        
+        if ~isempty(aLic) && ~isempty(aCtc)
+            ylim([min(min(aLic,aCtc))-1 max(max(aLic,aCtc))+1])
+        elseif isempty(aLic) && ~isempty(aCtc)
+            ylim([min(min(aCtc))-1 max(max(aCtc))+1])
+        elseif ~isempty(aLic) && isempty(aCtc)
+            ylim([min(min(aLic))-1 max(max(aLic))+1])
+        else
+            error('No test or control image to plot')
+        end
+        
         set(gca,'XTick', [1 2], 'FontWeight', 'bold', 'FontSize', 20)
         handles.resultsTitle{4} = 'Colony Count Comparison';
         title([handles.resultsTitle{4} ' (' fname ')'])
-        text(0.1, 0.75*max(max(aCtc),max(aLic)), ['n_C_t_r = ' ...
-            num2str(floor(median(mcct)))], 'Color', [.7 .7 .7], ...
-            'FontSize', 20)
-        text(0.1, 0.6*max(max(aCtc),max(aLic)), ['n_L_i = ' ...
-            num2str(floor(median(mcli)))], 'Color', [.7 .7 .7], ...
-            'FontSize', 20)
+        
+        if ~isempty(aLic) && ~isempty(aCtc)
+            text(0.1, 0.75*max(max(aCtc),max(aLic)), ['n_C_t_r = ' ...
+                num2str(floor(median(mcct)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+            text(0.1, 0.6*max(max(aCtc),max(aLic)), ['n_L_i = ' ...
+                num2str(floor(median(mcli)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        elseif isempty(aLic) && ~isempty(aCtc)
+            text(0.1, 0.75*max(max(aCtc)), ['n_C_t_r = ' ...
+                num2str(floor(median(mcct)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+       elseif ~isempty(aLic) && isempty(aCtc)     
+            text(0.1, 0.6*max(max(aLic)), ['n_L_i = ' ...
+                num2str(floor(median(mcli)))], 'Color', [.7 .7 .7], ...
+                'FontSize', 20)
+        else
+            error('No test or control image to plot')
+        end    
+        
         legend(strfig, 'Location', 'NorthWest')
+        
+        
         % Save results in handles.results
         screen_size     = get(0, 'ScreenSize');
         fig             = gcf;

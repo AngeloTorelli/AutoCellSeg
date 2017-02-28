@@ -61,7 +61,7 @@ handles.pars.vis         = false;
 handles.pars.bw          = 2000;
 handles.pars.sImBorder   = 10;
 handles.pars.wsvector    = 0.1:0.01:0.25;
-handles.pars.otsuvector  = 0.3: 0.1: 0.97;
+handles.pars.otsuvector  = 0.3:0.1:0.97;
 handles.pars.dishextract = true;
 handles.pars.adapthist   = false;
 handles.pars.gausfltsize = [5 5];
@@ -81,7 +81,7 @@ set(handles.radiobutton2,'tooltipString','<html>The process of partially automat
 set(handles.manualradiobutton,'tooltipString','<html>The process of manual segmentation runs over each individual image and consist of selecting each individual bacteria colony.<br><i>The type of selection depends on the choice of the a priori selection method.');
 
 set(handles.radiobutton5,'tooltipString','<html>The selection happens using the fast marching algorithm.<br><i><b>Single click</b> to mark the desired bacteria colony.<br><i><b>Double click</b> to mark the last desired bacteria colonies and start the initial segmentation.<br><i><b>Press Enter</b> to start the initial segmentation.');
-set(handles.radiobutton7,'tooltipString','<html>The selection is done by creating circles manually.<br><i><b>Click with drag</b> creates a circle.<br><i><b>Double left click on the circle</b> confirmes the shape of the circle.');
+set(handles.radiobutton7,'tooltipString','<html>The selection is done by creating circles manually.<br><i><b>Click with drag</b> creates a circle.<br><i><b>Double click</b> on the circle created applies the circle.');
 set(handles.radiobutton6,'tooltipString','<html>The selection is done by drawing the outline of a bacteria colony manually.<br><i><b>Click with drag</b> starts the drawing until <b>releasing the mouse key</b>. <br><i><b>Double click</b> on the shape created applies the shape.');
 
 set(handles.runButton,'tooltipString','<html>The run button activates the process of choice when the requirements are satisfied.<br><i>To run fully automated please select at least one bacteria colony of any picture.<br><i>Preferably select the smallest and biggest bacteria colony for best results.');
@@ -143,23 +143,9 @@ function addImages_Callback(hObject, eventdata, handles)
         if iscellstr(filename) == 0
             filename = cellstr(filename);
         end
+        handles.filename = filename;
         handles.data = cell2struct(filename, 'name', 1);
-        handles.ctrlen = 0;
-        handles.lgtlen = 0;
-        for i = 1:length(filename)            
-            handles.inds{i} = strfind(filename{i}, ' ');
-            handles.pars.im_name{i} = filename{i};
-            matches = strfind(filename{i}, handles.control);
-            if ~isempty(matches)
-                handles.ctrlen = handles.ctrlen +1;
-                handles.strarray{i} = filename{i}(matches(1):matches(1)+length(handles.control)-1);
-            end
-            matches = strfind(filename{i}, handles.test);
-            if ~isempty(matches)
-                handles.lgtlen = handles.lgtlen +1;
-                handles.strarray{i} = filename{i}(matches(1):matches(1)+length(handles.test)-1);
-            end
-        end
+        handles = extractNames(hObject, eventdata, handles);
         handles.featmat  = zeros(length(handles.data), handles.nfeat);
         handles.fullmat  = [];
         handles = visualizeData(hObject, eventdata, handles);
@@ -184,7 +170,7 @@ function addDir_Callback(hObject, eventdata, handles)
         handles = resetGUI(hObject, eventdata, handles);
         % Specifiying image type and reading directory
         if ismac
-            disp('BUUUH')
+            handles.imgtypes = ['JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
         elseif isunix
             handles.imgtypes = ['JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
         elseif ispc
@@ -204,23 +190,11 @@ function addDir_Callback(hObject, eventdata, handles)
                 data     = [data; dir([handles.fName '\*.' handles.imgtypes(di,:)])]; %#ok<AGROW>
             end
         end
-        
-        handles.ctrlen = 0;
-        handles.lgtlen = 0;
-        for i = 1:length(data)            
-            handles.inds{i} = strfind(data(i).name, ' ');
-            handles.pars.im_name{i} = data(i).name;
-            matches = strfind(data(i).name, handles.control);
-            if ~isempty(matches)
-                handles.ctrlen = handles.ctrlen +1;
-                handles.strarray{i} = data(i).name(matches(1):matches(1)+length(handles.control)-1);
-            end
-            matches = strfind(data(i).name, handles.test);
-            if ~isempty(matches)
-                handles.lgtlen = handles.lgtlen +1;
-                handles.strarray{i} = data(i).name(matches(1):matches(1)+length(handles.test)-1);
-            end
+        for iii = 1:length(data)
+            filename{iii} = data(iii).name;
         end
+        handles.filename = filename;
+        handles = extractNames(hObject, eventdata, handles);
         handles.cntrlf   = zeros(handles.ctrlen,1);
         handles.testf    = zeros(handles.lgtlen,1);
         handles.featmat  = zeros(length(data), handles.nfeat);
@@ -233,6 +207,24 @@ function addDir_Callback(hObject, eventdata, handles)
     end    
     guidata(hObject, handles)
 
+function handles = extractNames(hObject, eventdata, handles)
+    filename = handles.filename;
+    handles.ctrlen = 0;
+    handles.lgtlen = 0;
+    for i = 1:length(filename)            
+        handles.inds{i} = strfind(filename{i}, ' ');
+        handles.pars.im_name{i} = filename{i};
+        matches = strfind(filename{i}, handles.control);
+        if ~isempty(matches)
+            handles.ctrlen = handles.ctrlen +1;
+            handles.strarray{i} = filename{i}(matches(1):matches(1)+length(handles.control)-1);
+        end
+        matches = strfind(filename{i}, handles.test);
+        if ~isempty(matches)
+            handles.lgtlen = handles.lgtlen +1;
+            handles.strarray{i} = filename{i}(matches(1):matches(1)+length(handles.test)-1);
+        end
+    end
     
 % --- Executes on button press in prevPicButton.
 function prevPicButton_Callback(hObject, eventdata, handles)
@@ -314,8 +306,24 @@ function handles = checkProcessRadioButtons(hObject, eventdata, handles)
                     title('Please wait while the image is being processed.');
                     handles = BacteriaColonySeg(hObject, eventdata, handles);
                     handles = showResults(hObject, eventdata, handles);
-                    title('This is the result. Add segments with a left click, remove segments with a right click and end the process with a middle click.')
-                    handles.BW{i} = manualAddRem(handles.BW{i}, handles.imgs{i}, handles.pars);
+                    if handles.maxNum == 1
+                        changed = false;
+                        while ~changed
+                            title('This is the result. Add segments with a left click, remove segments with a right click and end the process with a middle click.')
+                            I = handles.BW{i};
+                            handles.BW{i} = manualAddRem(handles.BW{i}, handles.imgs{i}, handles.pars);
+                            I = sum(sum(I-handles.BW{i}));
+                            handles = showResults(hObject, eventdata, handles);
+                            if I == 0
+                                changed = true;
+                            else
+                                changed = false;
+                            end
+                        end
+                    else
+                        title('This is the result. Add segments with a left click, remove segments with a right click and end the process with a middle click.')
+                        handles.BW{i} = manualAddRem(handles.BW{i}, handles.imgs{i}, handles.pars);
+                    end
                     handles.running = false;
                     guidata(hObject, handles)
                     handles = showResults(hObject, eventdata, handles);
@@ -323,10 +331,10 @@ function handles = checkProcessRadioButtons(hObject, eventdata, handles)
                     
                     title('This is the end result for now. Close the windows to continue.')
                     waitfor(hFigure);
-                end                                
+                end
                 handles.done = true;
-            end       
-            guidata(hObject, handles);     
+            end
+            guidata(hObject, handles);
         case 'Manual selection'
             if isfield(handles, 'imgs') == 1
                 handles.fully = false;
@@ -338,7 +346,6 @@ function handles = checkProcessRadioButtons(hObject, eventdata, handles)
                     hFigure = figure('Name',handles.data(i).name,'NumberTitle','off');
                     set(hFigure, 'CloseRequestFcn', @(o,e)closeReq(hObject, eventdata,  handles.figure1));
                     imshow(handles.imgs{i});
-                    title('Please select all the colonies from the image.');
                     set(hFigure, 'MenuBar', 'none');
                     set(hFigure, 'ToolBar', 'figure');
                     set(hFigure, 'Resize', 'off');
@@ -351,8 +358,24 @@ function handles = checkProcessRadioButtons(hObject, eventdata, handles)
                     handles.pars.avcellsize  = 1.2*handles.minArea;
                     handles.pars.mincellsize = handles.minArea;
                     handles.pars.areavec     = [0.5*handles.minArea handles.minArea handles.maxArea 2*handles.maxArea];
-                    title('This is the result. Add segments with a left click, remove segments with a right click and end the process with a middle click.')
-                    handles.BW{i} = manualAddRem(handles.BW{i}, handles.imgs{i}, handles.pars);
+                    if handles.maxNum == 1
+                        changed = false;
+                        while ~changed
+                            title('This is the result. Add segments with a left click, remove segments with a right click and end the process with a middle click.')
+                            I = handles.BW{i};
+                            handles.BW{i} = manualAddRem(handles.BW{i}, handles.imgs{i}, handles.pars);
+                            I = sum(sum(I-handles.BW{i}));
+                            handles = showResults(hObject, eventdata, handles);
+                            if I == 0
+                                changed = true;
+                            else
+                                changed = false;
+                            end
+                        end
+                    else
+                        title('This is the result. Add segments with a left click, remove segments with a right click and end the process with a middle click.')
+                        handles.BW{i} = manualAddRem(handles.BW{i}, handles.imgs{i}, handles.pars);
+                    end
                     handles = showResults(hObject, eventdata, handles);
                     handles.running = false;
                     guidata(hObject, handles)
@@ -386,19 +409,21 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
     correctionSel = get(correctionSel,'String');
     if isfield(handles, 'iImg') == 0
         handles.indexImg = 1;
-    end          
+    end
     i = handles.indexImg;
+    objinfo.pixrev   = false;
+    objinfo.switch   = 0;
+    if sum(size(handles.norImg{i})) == 0
+        handles.norImg{i}= im_norm(double(mean(handles.imgs{i},3)), ...
+            [1 99], 'minmax', objinfo, 0);
+    end;
     handles.aborted = false;
     switch correctionSel
         case 'Fast marching'
-            objinfo.pixrev   = false;
-            objinfo.switch   = 0;
-            if sum(size(handles.norImg{i})) == 0
-                handles.norImg{i}= im_norm(double(mean(handles.imgs{i},3)), ...
-                                [1 99], 'minmax', objinfo, 0);
-            end;
+            
+            title('Please click on the center of each colony in this image.');
             try
-
+                
                 [x,y,~]          = impixel;
                 set(gcf,'pointer','watch')
                 title('Please wait until the process is finished.');
@@ -406,7 +431,7 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
                 x                = floor(x);
                 y                = floor(y);
                 mask             = false(size(handles.norImg{i}));
-
+                
                 %% Fast marching over the selected bacteria colonies
                 for ii = 1:length(x)
                     mask(y(ii),x(ii)) = true;
@@ -416,14 +441,42 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
             catch
                 handles.aborted = true;
             end
-        case 'Circle segmentation'
-            h = imellipse;
-            wait(h);
-            BW = createMask(h);
-        case 'Manual segmentation'
-            h = imfreehand;            
-            wait(h);
-            BW = createMask(h);
+        case 'Ellipse'
+            title('Please click and drag to mark the circumference of each colony. Double click inside the ellipse to confirm or press escape to finish.');
+            while 1
+                h = imellipse;
+                wait(h);
+                if isempty(h)
+                    break
+                else
+                    BW = createMask(h);
+                    BWempty = isempty(handles.BW{i});
+                    if BWempty
+                        handles.BW{i} = BW;
+                    else
+                        handles.BW{i} = BW | handles.BW{i};
+                    end
+                    guidata(hObject, handles)
+                end
+            end
+        case 'Freehand'
+            title('Please click and drag to draw the circumference of each colony. Double click inside the drawing to confirm or press escape to finish.');
+            while 1
+                h = imfreehand;
+                wait(h);
+                if isempty(h)
+                    break
+                else
+                    BW = createMask(h);
+                    BWempty = isempty(handles.BW{i});
+                    if BWempty
+                        handles.BW{i} = BW;
+                    else
+                        handles.BW{i} = BW | handles.BW{i};
+                    end
+                    guidata(hObject, handles)
+                end
+            end
     end
     
     if handles.aborted == false
@@ -746,9 +799,11 @@ function handles = showResults(hObject, eventdata, handles)
                         ones(3)), colour);
     handles.ov{i}   = overlay;
     imshow(overlay)
-    title(['Thank you for selecting. The MinArea = ' num2str(handles.minArea) ...
-        ' and MaxArea = ' num2str(handles.maxArea) ' have been calculated.'])
     
+    if isfield(handles, 'running') == 0 || handles.running == false
+        title(['Thank you for selecting. The MinArea = ' num2str(handles.minArea) ...
+            ' and MaxArea = ' num2str(handles.maxArea) ' have been calculated.'])
+    end
     correctionSel = get(handles.correctionRadioButtons, 'SelectedObject');
     correctionSel = get(correctionSel,'String');
     switch correctionSel
@@ -766,7 +821,13 @@ function handles = showResults(hObject, eventdata, handles)
     end
     
 function handles = resetGUI(hObject, eventdata, handles)
-    handles = resetFigure(hObject, eventdata, handles);        
+    handles = resetFigure(hObject, eventdata, handles);
+    if isfield(handles, 'wsvectext') == 1
+        handles = rmfield(handles, 'wsvectext');
+    end               
+    if isfield(handles, 'otsuvectext') == 1
+        handles = rmfield(handles, 'otsuvectext');
+    end               
     if isfield(handles, 'iImg') == 1
         handles = rmfield(handles, 'iImg');
     end               
@@ -961,25 +1022,38 @@ function saveButton_Callback(hObject, eventdata, handles)
             [data(k).name(1:end - 4) ' seg'], ...
             featmat(k,1), ...
             featmat(k,2), featmat(k,3), featmat(k,4));
+        sumStruct(k).ImageName        = num2str([data(k).name(1:end - 4) ' seg']);
+        sumStruct(k).ColonyCount      = featmat(k,1);
+        sumStruct(k).MeanArea         = featmat(k,2);
+        sumStruct(k).MeanRadius       = featmat(k,3);
+        sumStruct(k).MeanEccentricity = featmat(k,4);
     end
 
     fclose(fileID); 
     
     % write results to '\results' directory
-    if sum(size(handles.results{1})) ~= 0
-        fname    = pars.im_name{1}(handles.inds{1}(2):(end-4));
-        indices         = strfind(fname, '\');
-        fname(indices)  = [];
-        imwrite(handles.results{1}, [handles.fName '\results\' handles.resultsName{1}], 'jpg')
-        imwrite(handles.results{2}, [handles.fName '\results\' handles.resultsName{2}], 'jpg')
-        imwrite(handles.results{3}, [handles.fName '\results\' handles.resultsName{3}], 'jpg')
-        imwrite(handles.results{4}, [handles.fName '\results\' handles.resultsName{4}], 'jpg')
-        imwrite(handles.results{5}, [handles.fName '\results\' handles.resultsName{5}], 'jpg')
-    end
+%     if sum(size(handles.results{1})) ~= 0
+%         fname    = pars.im_name{1}(handles.inds{1}(2):(end-4));
+%         indices         = strfind(fname, '\');
+%         fname(indices)  = [];
+%         imwrite(handles.results{1}, [handles.fName '\results\' handles.resultsName{1}], 'jpg')
+%         if handles.maxNum > 1
+%             imwrite(handles.results{2}, [handles.fName '\results\' handles.resultsName{2}], 'jpg')
+%             imwrite(handles.results{3}, [handles.fName '\results\' handles.resultsName{3}], 'jpg')
+%             imwrite(handles.results{4}, [handles.fName '\results\' handles.resultsName{4}], 'jpg')
+%             imwrite(handles.results{5}, [handles.fName '\results\' handles.resultsName{5}], 'jpg')
+%         end
+%     end
     set(gcf,'pointer','arrow')
     set(handles.instructions, 'String', ...
         'Thank you for waiting. All the results have been saved.')
-
+    
+    tableEntries = {'ExperimentNumber', 'ColonyID', 'Size', ...
+    'MinorAxisLength', 'Eccentricity', 'MeanIntensity', 'Radius', 'Type'};
+    T = array2table(handles.fullmat, 'VariableNames',tableEntries);
+    writetable(T,[handles.fName '\results\' 'BacteriaColonySegFull.csv'], 'Delimiter', ' ')
+    T1 = struct2table(sumStruct);
+    writetable(T1,[handles.fName '\results\' 'BacteriaColonySegSummary.csv'])
 
 % --- Executes on button press in showresultsbutton.
 function showresultsbutton_Callback(hObject, eventdata, handles)
@@ -1004,8 +1078,18 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
     
     %PLOT 1
     cstr = {'-g', '--g', ':g', '-.g', '-g', '--g', ':g', '-.g', ...
+        '-g', '--g', ':g', '-.g', '-g', '--g', ':g', '-.g', ...
+        '-g', '--g', ':g', '-.g', '-g', '--g', ':g', '-.g', ...
+        '-g', '--g', ':g', '-.g', '-g', '--g', ':g', '-.g', ...
+        '-g', '--g', ':g', '-.g', '-g', '--g', ':g', '-.g', ...
         '-g', '--g', ':g', '-.g', '-g', '--g', ':g', '-.g'};
     lstr = {'-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r', ...
+        '-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r', ...
+        '-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r', ...
+        '-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r', ...
+        '-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r', ...
+        '-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r', ...
+        '-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r', ...
         '-r', '--r', ':r', '-.r', '-r', '--r', ':r', '-.r'};
     figure('Visible','off')
     for i = 1 : tdata
@@ -1023,6 +1107,8 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
                 b    = trapz(handles.areavec{i});
                 B(i) = b/numel(handles.areavec{i});
                 hold on
+            else 
+                f = [];
             end
         elseif strcmp(handles.strarray{i}, handles.test) == 1 || ...
                 strcmp(handles.strarray{i}, 'constant') == 1
@@ -1044,6 +1130,8 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
                 b    = trapz(handles.areavec{i});
                 B(i) = max(1,b/numel(handles.areavec{i}));
                 hold on
+            else
+                f = [];
             end
         elseif strcmp(handles.strarray{i}, 'pulsed') == 1
             if~isempty(handles.areavec{i})
@@ -1064,6 +1152,8 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
                 b    = trapz(handles.areavec{i});
                 B(i) = max(1,b/numel(handles.areavec{i}));
                 hold on
+            else 
+                f = [];
             end
         end
     end
@@ -1096,19 +1186,31 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
     legend(strar, 'Location', 'NorthEast')
     grid on
     
+    % Check if results directory exists
+    npath   = [handles.fName '\results\'];
+    if ~exist(npath, 'dir')
+        mkdir(npath)
+    end
+    
     % Save results in handles.results
     screen_size     = get(0, 'ScreenSize');
     fig             = gcf;
     set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
     handles.results{1} = print(fig, '-RGBImage');
+    print(fig, [npath fname  '_kde'], '-dpng');
     handles.resultsName{1} = [fname ' kde.jpg'];
-    close(gcf);
+                    wfig = gcf;
+    if strcmp(wfig.Name, 'AutoSeg') == 0
+        close(gcf);
+    end
     
-    if handles.maxNum > 1   
-    set(handles.instructions, 'String', ...
-        'Please wait while the results are being created (20%)')     
-        fnew  = f(50:65);
-        ff    = linspace(min(fnew), max(fnew),tdata);
+    if handles.maxNum > 1
+        set(handles.instructions, 'String', ...
+            'Please wait while the results are being created (20%)')
+        if ~isempty(f)
+            fnew  = f(50:65);
+            ff    = linspace(min(fnew), max(fnew),tdata);
+        end
         si1   = 1 ;
         si2   = 1;
         
@@ -1170,23 +1272,44 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         t    = [1;2];
         plst = {'g--x', 'r--x', 'b--x', 'c--x', 'm--x', 'k--x', ...
             'g:x', 'r:x', 'b:x', 'c:x', 'm:x', 'k:x', ...
+            'g-x', 'r-x', 'b-x', 'c-x', 'm-x', 'k-x', ...
+            'g--x', 'r--x', 'b--x', 'c--x', 'm--x', 'k--x', ...
+            'g:x', 'r:x', 'b:x', 'c:x', 'm:x', 'k:x', ...
+            'g-x', 'r-x', 'b-x', 'c-x', 'm-x', 'k-x', ...
+            'g--x', 'r--x', 'b--x', 'c--x', 'm--x', 'k--x', ...
+            'g:x', 'r:x', 'b:x', 'c:x', 'm:x', 'k:x', ...
             'g-x', 'r-x', 'b-x', 'c-x', 'm-x', 'k-x'};
         
         
         %PLOT 2
         strfig = '';
-        mcct   = 0;
-        mcli   = 0;
         figure('Visible','off');
-        for k = 1 : min(l1,l2)
+        lvec   = [l1 l2];
+        lvec(lvec == 0) = [];
+        mcct   = zeros(l1,1);
+        mcli   = zeros(l2,1);
+        
+        for k = 1 : min(lvec)
             % Total area from curve plot
-            plot(t,[CtCA(k);LiCA(k)], plst{k} ,'LineWidth',2, 'MarkerSize',10)
+            if l1>0 && l2>0
+                plot(t,[CtCA(k);LiCA(k)], plst{k} ,'LineWidth',2, ...
+                    'MarkerSize',10)
+                mcct(k) = numel(handles.areavec{k});
+                mcli(k) = numel(handles.areavec{k+l2});
+            elseif l1>0 && l2<1
+                plot(t(1),CtCA(k), plst{k} ,'LineWidth',2, 'MarkerSize',10)
+                mcct(k) = numel(handles.areavec{k});
+            elseif l2>0 && l1<1
+                plot(t(2),LiCA(k), plst{k} ,'LineWidth',2, 'MarkerSize',10)
+                mcli(k) = numel(handles.areavec{k});
+            else
+                error('No control or test images')
+            end
             grid on
             hold on
             strfig{k} = ['Exp ' num2str(k)];
-            mcct(k)   = numel(handles.areavec{k});
-            mcli(k)   = numel(handles.areavec{k+l2});
         end
+        
         xlabel(['1: ' handles.control ' , ' ' 2: ' handles.test])
         xlim([0 3])
         set(gca,'XTick', [1 2], 'FontWeight', 'bold', 'FontSize', 18)
@@ -1206,7 +1329,10 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{5} = print(fig, '-RGBImage');
         handles.resultsName{5} = [fname ' KDEArea.jpg'];
-        close(gcf);
+                    wfig = gcf;
+        if strcmp(wfig.Name, 'AutoSeg') == 0                         
+            close(gcf);                     
+        end
         set(handles.instructions, 'String', ...
             'Please wait while the results are being created (40%)')
         
@@ -1224,7 +1350,7 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         elseif isempty(LiAA) && ~isempty(CtAA)
             for k = 1 : length(CtAA)
                 % Total absolute area plot
-                plot(t,[CtAA(k)], plst{k} ,'LineWidth',2, 'MarkerSize',20)
+                plot(t(1),CtAA(k), plst{k} ,'LineWidth',2, 'MarkerSize',20)
                 grid on
                 hold on
                 strtmp = ['Exp ' num2str(k)];
@@ -1233,20 +1359,20 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         elseif ~isempty(LiAA) && isempty(CtAA)
             for k = 1 : length(CtAA)
                 % Total absolute area plot
-                plot(t,[LiAA(k)], plst{k} ,'LineWidth',2, 'MarkerSize',20)
+                plot(t(2),LiAA(k), plst{k} ,'LineWidth',2, 'MarkerSize',20)
                 grid on
                 hold on
                 strtmp = ['Exp ' num2str(k)];
                 strfig{k} = ['Exp ' num2str(k)];
-            end   
+            end
         else
-            Error('No control or test images')            
+            Error('No control or test images')
         end
         xlabel(['1: ' handles.control ' , ' ' 2: ' handles.test])
         ylabel('Normalized Colony Size')
         xlim([0 3])
         if ~isempty(LiAA) && ~isempty(CtAA)
-            ylim([min(CtAA,LiAA) max(LiAA,CtAA)])
+            ylim([min(min(CtAA,LiAA)) max(max(LiAA,CtAA))])
         elseif isempty(LiAA) && ~isempty(CtAA)
             ylim([min(CtAA) max(CtAA)])
         elseif ~isempty(LiAA) && isempty(CtAA)
@@ -1274,24 +1400,28 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
                 num2str(floor(median(LiAA)))], 'Color', [.7 .7 .7], ...
                 'FontSize', 20)
         else
-            Error('No control or test images')            
+            Error('No control or test images')
         end
-            
-       
+        
+        
         legend(strfig, 'Location', 'NorthWest')
         % Save results in handles.results
         screen_size     = get(0, 'ScreenSize');
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{2} = print(fig, '-RGBImage');
+        print(fig, [npath fname  '_AbsArea'], '-dpng');
         handles.resultsName{2} = [fname ' AbsArea.jpg'];
-        close(gcf);
+                    wfig = gcf;
+        if strcmp(wfig.Name, 'AutoSeg') == 0
+            close(gcf);
+        end
         set(handles.instructions, 'String', ...
             'Please wait while the results are being created (60%)')
         
         %PLOT 4
         CtAA  (CtAA == 0)  = [];
-        LiAA  (LiAA == -1) = 0; 
+        LiAA  (LiAA == -1) = 0;
         figure('Visible','off');
         for k = 1 : min(l1,l2)
             % Total absolute area normalized to 1 plot
@@ -1336,15 +1466,19 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         else
             error('No test or control image to plot')
         end
-                
+        
         legend(strfig, 'Location', 'SouthWest')
         % Save results in handles.results
         screen_size     = get(0, 'ScreenSize');
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{3} = print(fig, '-RGBImage');
+        print(fig, [npath fname  '_AbsAreaTo1'], '-dpng');
         handles.resultsName{3} = [fname ' AbsAreaTo1.jpg'];
-        close(gcf);
+                    wfig = gcf;
+        if strcmp(wfig.Name, 'AutoSeg') == 0
+            close(gcf);
+        end
         set(handles.instructions, 'String', ...
             'Please wait while the results are being created (80%)')
         
@@ -1353,7 +1487,7 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
             aLic  (aLic == 0) = [];
         end
         aLic(aLic == -1) = 0;
-
+        
         
         if numel(aCtc) > 0
             aCtc  (aCtc == 0) = [];
@@ -1361,13 +1495,32 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         aCtc(aCtc == -1) = 0;
         
         plst1 = {'g-o', 'r-o', 'b-o', 'c-o', 'm-o', 'k-o', 'y-o', ...
+            'g--o', 'r--o', 'b--o', 'c--o', 'm--o', 'k--o', 'y--o', ...
+            'g-o', 'r-o', 'b-o', 'c-o', 'm-o', 'k-o', 'y-o', ...
+            'g--o', 'r--o', 'b--o', 'c--o', 'm--o', 'k--o', 'y--o', ...
+            'g-o', 'r-o', 'b-o', 'c-o', 'm-o', 'k-o', 'y-o', ...
+            'g--o', 'r--o', 'b--o', 'c--o', 'm--o', 'k--o', 'y--o', ...
+            'g-o', 'r-o', 'b-o', 'c-o', 'm-o', 'k-o', 'y-o', ...
+            'g--o', 'r--o', 'b--o', 'c--o', 'm--o', 'k--o', 'y--o', ...
+            'g-o', 'r-o', 'b-o', 'c-o', 'm-o', 'k-o', 'y-o', ...
+            'g--o', 'r--o', 'b--o', 'c--o', 'm--o', 'k--o', 'y--o', ...
+            'g-o', 'r-o', 'b-o', 'c-o', 'm-o', 'k-o', 'y-o', ...
             'g--o', 'r--o', 'b--o', 'c--o', 'm--o', 'k--o', 'y--o'};
         
         figure('Visible','off');
         strtmp = '';
-        for k = 1 : min(l1,l2)
+        for k = 1 : min(lvec)
             % Total absolute count plot
-            plot(t,[aCtc(k);aLic(k)],plst1{k},'LineWidth',2,'MarkerSize',18)
+            if l1>0 && l2>0
+                plot(t,[aCtc(k);aLic(k)],plst1{k}, ...
+                    'LineWidth',2,'MarkerSize',18)
+            elseif l1>0 && l2<1
+                plot(t(1),aCtc(k),plst1{k}, 'LineWidth',2,'MarkerSize',18)
+            elseif l2>0 && l1<1
+                plot(t(2),aLic(k),plst1{k}, 'LineWidth',2,'MarkerSize',18)
+            else
+                error('No test or control image to plot')
+            end
             grid on
             hold on
             strtmp = ['Exp ' num2str(k)];
@@ -1402,13 +1555,13 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
             text(0.1, 0.75*max(max(aCtc)), ['n_C_t_r = ' ...
                 num2str(floor(median(mcct)))], 'Color', [.7 .7 .7], ...
                 'FontSize', 20)
-       elseif ~isempty(aLic) && isempty(aCtc)     
+        elseif ~isempty(aLic) && isempty(aCtc)
             text(0.1, 0.6*max(max(aLic)), ['n_L_i = ' ...
                 num2str(floor(median(mcli)))], 'Color', [.7 .7 .7], ...
                 'FontSize', 20)
         else
             error('No test or control image to plot')
-        end    
+        end
         
         legend(strfig, 'Location', 'NorthWest')
         
@@ -1418,8 +1571,12 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{4} = print(fig, '-RGBImage');
+        print(fig, [npath fname  '_Count'], '-dpng');
         handles.resultsName{4} = [fname ' Count.jpg'];
-        close(gcf);
+                    wfig = gcf;
+        if strcmp(wfig.Name, 'AutoSeg') == 0
+            close(gcf);                     
+        end
     end
     handles = resetFigure(hObject, eventdata, handles);
     handles = visualizeData(hObject, eventdata, handles);
@@ -1491,23 +1648,41 @@ function optionbutton_Callback(hObject, eventdata, handles)
         'Bandwith for the kde plot', ...
         'Name for control images', ...
         'Name for test images'};
+    if isfield(handles, 'otsuvectext') == 0
+        handles.otsuvectext = '0.3:0.1:0.97';
+    end
+    if isfield(handles, 'wsvectext') == 0
+        handles.wsvectext = '0.1:0.01:0.25';
+    end
     dlg_title          = 'Options';
     nline              = 1;
-    dflt               = {'10', 'true', '0.45', ...
-        '[5 5]', '0.3: 0.1: 0.97', '0.1:0.01:0.25', ...
-        '2', 'false', '2000', 'control','light'};
+    dflt               = {num2str(handles.pars.sImBorder), ...
+        num2str(handles.pars.dishextract), ...
+        num2str(handles.pars.avcellecc), ...
+        num2str(handles.pars.gausfltsize), ...
+        handles.otsuvectext, ...
+        handles.wsvectext, ...
+        num2str(handles.pars.chnnlselect), ...
+        num2str(handles.pars.adapthist), ...
+        num2str(handles.pars.bw), ...
+        handles.control, ...
+        handles.test};
     answer             = inputdlg(pr, dlg_title, nline, dflt);    
     if ~isempty(answer)
+        handles.otsuvectext = answer{5};
+        handles.wsvectext = answer{6};
+        
         handles.pars.sImBorder   = str2num(answer{1});
         handles.pars.dishextract = str2num(answer{2});
         handles.pars.avcellecc   = str2num(answer{3});
         handles.pars.gausfltsize = str2num(answer{4});
-        handles.pars.otsuvector  = str2num(answer{5});
-        handles.pars.wsvector    = str2num(answer{6});
+        handles.pars.otsuvector  = str2num(handles.otsuvectext);
+        handles.pars.wsvector    = str2num(handles.wsvectext);
         handles.pars.chnnlselect = str2num(answer{7});
         handles.pars.adapthist   = str2num(answer{8});
         handles.pars.bw          = str2num(answer{9});        
         handles.control = answer{10};
         handles.test    = answer{11};
+        handles = extractNames(hObject, eventdata, handles);
     end
     guidata(hObject, handles)

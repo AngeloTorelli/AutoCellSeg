@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="715703001" file="C:\micseg\MATLAB\GUI\AutoSeg.prj" location="C:\micseg\MATLAB\GUI" name="AutoSeg" preferred-package-location="C:\micseg\MATLAB\GUI\AutoSeg\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="1658066239" file="C:\micseg\MATLAB\GUI\AutoSeg.prj" location="C:\micseg\MATLAB\GUI" name="AutoSeg" preferred-package-location="C:\micseg\MATLAB\GUI\AutoSeg\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>AutoSeg</param.appname>
     <param.icon>${PROJECT_ROOT}\AutoSeg_resources\icon.ico</param.icon>
     <param.icons>
@@ -9,14 +9,14 @@
       <file>${PROJECT_ROOT}\AutoSeg_resources\icon_16.png</file>
     </param.icons>
     <param.version>1.0</param.version>
-    <param.authnamewatermark />
-    <param.email />
-    <param.company />
+    <param.authnamewatermark>Arif ul Maula Khan &amp; Angelo Torelli</param.authnamewatermark>
+    <param.email>ArifulMaula.Khan@medma.uni-heidelberg.de; Angelo.Torelli@medma.uni-heidelberg.de;</param.email>
+    <param.company>Medical Research Center (ZMF)</param.company>
     <param.summary />
-    <param.description />
+    <param.description>AutoSeg 1.0 is the first public version of the CFU/cell segmentation using a priori knowledge and automatic feedback-based segmentation that allows user to correct the results interactively.</param.description>
     <param.screenshot>${PROJECT_ROOT}\AutoSeg_1.png</param.screenshot>
     <param.guid />
-    <param.installpath.string>\AutoSeg\</param.installpath.string>
+    <param.installpath.string>\Medical Research Center (ZMF)\AutoSeg\</param.installpath.string>
     <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
     <param.logo />
     <param.install.notes />
@@ -36,7 +36,7 @@
     <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
     <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
     <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
-    <param.windows.command.prompt>false</param.windows.command.prompt>
+    <param.windows.command.prompt>true</param.windows.command.prompt>
     <param.create.log>false</param.create.log>
     <param.log.file />
     <unset>
@@ -45,7 +45,6 @@
       <param.email />
       <param.company />
       <param.summary />
-      <param.description />
       <param.guid />
       <param.installpath.string />
       <param.installpath.combo />
@@ -66,6 +65,7 @@
       <param.web.mcr.name />
       <param.package.mcr.name />
       <param.no.mcr.name />
+      <param.windows.command.prompt />
       <param.create.log />
       <param.log.file />
     </unset>

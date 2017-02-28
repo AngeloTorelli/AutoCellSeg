@@ -186,9 +186,14 @@ function handles = process(hObject, handles)
     end
     
     handles.labstr  = pars.im_name{handles.indexImg}(inds(1)+1:inds(2)-1);
-    fullmattmp      = [handles.indexImg*ones(length(feats),1) (1:length(feats))'...
-        [feats.Area]' t_h*ones(length(feats),1) ...
-        t_ir*ones(length(feats),1) type];
+    if ~isempty(feats)
+        fullmattmp = [handles.indexImg*ones(length(feats),1) ...
+            (1:length(feats))' [feats.Area]' [feats.MinorAxisLength]' ...
+            [feats.Eccentricity]' [feats.MeanIntensity]' ...
+            [feats.Radius]' type]; 
+    else
+        fullmattmp = [];
+    end
     
     handles.inds{handles.indexImg} = inds;
     handles.feats{handles.indexImg} = feats;

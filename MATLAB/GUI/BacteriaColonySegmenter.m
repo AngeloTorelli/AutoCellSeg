@@ -72,6 +72,17 @@ handles.control = 'control';
 handles.test    = 'light';
 handles.nfeat    = 4;
 
+
+if ismac
+    handles.slash = '/';
+elseif isunix
+    handles.slash = '/';
+elseif ispc
+    handles.slash = '\';
+else
+    disp('Platform not supported')
+end
+
 set(handles.addImages,'tooltipString','<html>Add any number of images:<br><i><b>Click </b>to select an individual image.<br><i><b>Shift-click </b>to batch select from selected picture to clicked one.<br><i><b>Ctrl-click </b>to select multiple individual pictures.<br><i><b>Shift-ctrl-click </b>to select multiple batches of pictures.');
 set(handles.addDir,'tooltipString','<html>Add all the images of one folder.');
 
@@ -187,7 +198,7 @@ function addDir_Callback(hObject, eventdata, handles)
             end
         else
             for di = 1 : size(handles.imgtypes, 1)
-                data     = [data; dir([handles.fName '\*.' handles.imgtypes(di,:)])]; %#ok<AGROW>
+                data     = [data; dir([handles.fName handles.slash '*.' handles.imgtypes(di,:)])]; %#ok<AGROW>
             end
         end
         for iii = 1:length(data)
@@ -554,7 +565,7 @@ function handles = visualizeData(hObject, eventdata, handles)
                     if ~isdeployed
                         handles.imgs{i} = imread(handles.data(i).name);
                     else
-                        handles.imgs{i} = imread([handles.fName '\' handles.data(i).name]);
+                        handles.imgs{i} = imread([handles.fName handles.slash handles.data(i).name]);
                     end
                 end
                 ii = i - handles.iImg*handles.maxPics;
@@ -1003,18 +1014,18 @@ function saveButton_Callback(hObject, eventdata, handles)
     featmat = handles.featmat;
     pars    = handles.pars;
     data    = handles.data;
-    npath   = [handles.fName '\results'];
+    npath   = [handles.fName handles.slash 'results'];
     if exist(npath, 'dir') ~= 7
         mkdir(npath)
     end
     %% Write segmented images to '\results' directory
     for i = 1:length(handles.imgs)
-        imwrite(handles.BW{i}, [handles.fName '\results\' data(i).name(1:end - 4) '_mask.jpg'], 'jpg')
-        imwrite(handles.ov{i}, [handles.fName '\results\' data(i).name(1:end - 4) '_seg.jpg'], 'jpg')
+        imwrite(handles.BW{i}, [handles.fName handles.slash 'results' handles.slash data(i).name(1:end - 4) '_mask.jpg'], 'jpg')
+        imwrite(handles.ov{i}, [handles.fName handles.slash 'results' handles.slash data(i).name(1:end - 4) '_seg.jpg'], 'jpg')
     end
     
     %% Write colony features to text file
-    fileID = fopen([handles.fName '\results\' 'BacteriaColonySegSummary.txt'],'wt');
+    fileID = fopen([handles.fName handles.slash 'results' handles.slash 'BacteriaColonySegSummary.txt'],'wt');
     fprintf  (fileID,'%30s %10s %9s %11s %15s \n', 'Image name', ...
         'Colony count', 'Mean area', 'Mean radius', 'Mean eccentricity');
     for k = 1 : size(featmat,1)
@@ -1051,9 +1062,9 @@ function saveButton_Callback(hObject, eventdata, handles)
     tableEntries = {'ExperimentNumber', 'ColonyID', 'Size', ...
     'MinorAxisLength', 'Eccentricity', 'MeanIntensity', 'Radius', 'Type'};
     T = array2table(handles.fullmat, 'VariableNames',tableEntries);
-    writetable(T,[handles.fName '\results\' 'BacteriaColonySegFull.csv'], 'Delimiter', ' ')
+    writetable(T,[handles.fName handles.slash 'results' handles.slash 'BacteriaColonySegFull.csv'], 'Delimiter', ' ')
     T1 = struct2table(sumStruct);
-    writetable(T1,[handles.fName '\results\' 'BacteriaColonySegSummary.csv'])
+    writetable(T1,[handles.fName handles.slash 'results' handles.slash 'BacteriaColonySegSummary.csv'])
 
 % --- Executes on button press in showresultsbutton.
 function showresultsbutton_Callback(hObject, eventdata, handles)
@@ -1187,7 +1198,7 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
     grid on
     
     % Check if results directory exists
-    npath   = [handles.fName '\results\'];
+    npath   = [handles.fName handles.slash 'results' handles.slash];
     if ~exist(npath, 'dir')
         mkdir(npath)
     end

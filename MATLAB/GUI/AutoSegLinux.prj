@@ -1,0 +1,175 @@
+<deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
+  <configuration build-checksum="2824980635" file="/home/angelo/Documents/test/BacteriaColonySegmenter.prj" location="/home/angelo/Documents/test" name="BacteriaColonySegmenter" preferred-package-location="/home/angelo/Documents/test/BacteriaColonySegmenter/for_redistribution" preferred-package-type="package.type.install" target="target.ezdeploy.standalone" target-name="Application Compiler">
+    <param.appname>AutoSeg</param.appname>
+    <param.icon />
+    <param.icons />
+    <param.version>1.0</param.version>
+    <param.authnamewatermark>Arif ul Maula Khan &amp; Angelo Torelli</param.authnamewatermark>
+    <param.email>ArifulMaula.Khan@medma.uni-heidelberg.de; Angelo.Torelli@medma.uni-heidelberg.de</param.email>
+    <param.company>Medical Research Center (ZMF)</param.company>
+    <param.summary />
+    <param.description>AutoSeg 1.0 is the first public version of the CFU/cell segmentation using a priori knowledge and automatic feedback-based segmentation that allows user to correct the results interactively.</param.description>
+    <param.screenshot />
+    <param.guid />
+    <param.installpath.string>/Medical_Research_Center_(ZMF)/AutoSeg/</param.installpath.string>
+    <param.installpath.combo>option.installpath.user</param.installpath.combo>
+    <param.logo>/home/angelo/Documents/AutoSeg/MATLAB/GUI/AutoSeg_1.png</param.logo>
+    <param.install.notes>In the following directions, replace MCR_ROOT by the directory where the MATLAB Runtime is installed on the target machine.
+
+(1) Set the environment variable XAPPLRESDIR to this value:
+
+    MCR_ROOT/v91/X11/app-defaults
+
+
+(2) If the environment variable LD_LIBRARY_PATH is undefined, set it to the concatenation of the following strings:
+
+    MCR_ROOT/v91/runtime/glnxa64:
+    MCR_ROOT/v91/bin/glnxa64:
+    MCR_ROOT/v91/sys/os/glnxa64:
+    MCR_ROOT/v91/sys/opengl/lib/glnxa64
+
+    If it is defined, set it to the concatenation of these strings:
+
+    ${LD_LIBRARY_PATH}: 
+    MCR_ROOT/v91/runtime/glnxa64:
+    MCR_ROOT/v91/bin/glnxa64:
+    MCR_ROOT/v91/sys/os/glnxa64:
+    MCR_ROOT/v91/sys/opengl/lib/glnxa64</param.install.notes>
+    <param.target.install.notes />
+    <param.intermediate>${PROJECT_ROOT}/BacteriaColonySegmenter/for_testing</param.intermediate>
+    <param.files.only>${PROJECT_ROOT}/BacteriaColonySegmenter/for_redistribution_files_only</param.files.only>
+    <param.output>${PROJECT_ROOT}/BacteriaColonySegmenter/for_redistribution</param.output>
+    <param.logdir>${PROJECT_ROOT}/BacteriaColonySegmenter</param.logdir>
+    <param.enable.clean.build>false</param.enable.clean.build>
+    <param.user.defined.mcr.options />
+    <param.embed.ctf>true</param.embed.ctf>
+    <param.target.type>subtarget.standalone</param.target.type>
+    <param.support.packages />
+    <param.web.mcr>true</param.web.mcr>
+    <param.package.mcr>false</param.package.mcr>
+    <param.no.mcr>false</param.no.mcr>
+    <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
+    <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
+    <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
+    <param.windows.command.prompt>false</param.windows.command.prompt>
+    <param.create.log>false</param.create.log>
+    <param.log.file />
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.version />
+      <param.summary />
+      <param.screenshot />
+      <param.guid />
+      <param.installpath.string />
+      <param.installpath.combo />
+      <param.target.install.notes />
+      <param.intermediate />
+      <param.files.only />
+      <param.output />
+      <param.logdir />
+      <param.enable.clean.build />
+      <param.user.defined.mcr.options />
+      <param.embed.ctf />
+      <param.target.type />
+      <param.support.packages />
+      <param.web.mcr />
+      <param.package.mcr />
+      <param.no.mcr />
+      <param.web.mcr.name />
+      <param.package.mcr.name />
+      <param.no.mcr.name />
+      <param.windows.command.prompt />
+      <param.create.log />
+      <param.log.file />
+    </unset>
+    <fileset.main>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/GUI/BacteriaColonySegmenter.m</file>
+    </fileset.main>
+    <fileset.resources>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/ScratchSeg.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/allcomb.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/autodilate.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/autonorm.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/evalSegmentation.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/qualityBacColSeg.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/region_grow.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/code/segment.m</file>
+    </fileset.resources>
+    <fileset.package>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/GUI/AutoSeg.png</file>
+    </fileset.package>
+    <fileset.depfun>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/GUI/BacteriaColonySeg.m</file>
+      <file>/home/angelo/Documents/AutoSeg/MATLAB/GUI/BacteriaColonySegmenter.fig</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/CellSeg.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/ExtractObjImage.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/aiwatershed.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/autonorm_regr.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/calc_norm_quality.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/fastMarchingInd.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/feateval.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/feedbackOtsu.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/fullimageWS.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/get4ngb.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/im_norm.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/imoverlay.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/manualAddRem.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/normalize.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/normalize_regr.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/petridishExtractor.m</file>
+      <file>/home/angelo/Documents/micseg/MATLAB/code/removebadBLOBS.m</file>
+    </fileset.depfun>
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}/BacteriaColonySegmenter/for_testing" name="splash.png" optional="false">/home/angelo/Documents/test/BacteriaColonySegmenter/for_testing/splash.png</file>
+      <file location="${PROJECT_ROOT}/BacteriaColonySegmenter/for_testing" name="readme.txt" optional="true">/home/angelo/Documents/test/BacteriaColonySegmenter/for_testing/readme.txt</file>
+      <file location="${PROJECT_ROOT}/BacteriaColonySegmenter/for_testing" name="AutoSeg" optional="false">/home/angelo/Documents/test/BacteriaColonySegmenter/for_testing/AutoSeg</file>
+      <file location="${PROJECT_ROOT}/BacteriaColonySegmenter/for_testing" name="run_AutoSeg.sh" optional="false">/home/angelo/Documents/test/BacteriaColonySegmenter/for_testing/run_AutoSeg.sh</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/usr/local/MATLAB/R2016b</root>
+      <toolboxes>
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabcoder" />
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="embeddedcoder" />
+      </toolboxes>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>false</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>true</linux>
+      <solaris>false</solaris>
+      <osver>4.4.0-62-generic</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>glnxa64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

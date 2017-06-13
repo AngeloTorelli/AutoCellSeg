@@ -185,7 +185,11 @@ function handles = process(hObject, handles)
         type        = 3*ones(length(feats),1);
     end
     
-    handles.labstr  = pars.im_name{handles.indexImg}(inds(1)+1:inds(2)-1);
+   if numel(inds)>1
+       handles.labstr = pars.im_name{handles.indexImg}(inds(1)+1:inds(2)-1);
+   else
+       handles.labstr = pars.im_name{handles.indexImg};
+   end
     if ~isempty(feats)
         fullmattmp = [handles.indexImg*ones(length(feats),1) ...
             (1:length(feats))' [feats.Area]' [feats.MinorAxisLength]' ...

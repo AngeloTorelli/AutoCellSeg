@@ -52,12 +52,13 @@ im          = imad.*image;
 oi.pixrev   = false;
 oi.switch   = 0;
 im_nor      = im_norm(im, [1 99], 'minmax', oi, 0);
+im_nor2     = im_norm(image, [1 99], 'minmax', oi, 0);
 
 % Guassian filtering
 im_nor1     = imgaussfilt(im_nor,parameters.gausfltsize);
 im_nor1      (im_nor1 > 0.8) = 0.8;
 
-if mean(mean(im_nor1)) > 0.45
+if mean(mean(im_nor2)) > 0.45
     im     = double(image(:,:,1));
     im     = imcomplement(im);
     im_nor = im_norm(im, [1 99], 'minmax', oi, 0);
@@ -69,9 +70,12 @@ if parameters.vis == true
     figure; imshow(ov,[])
     title(['Segmented Image : ' parameters.im_name])
 end
-
 % Background correction
-im_nor = imtophat(im_nor1,strel('disk', 90));
+if mean(mean(im_nor2)) > 0.45
+    im_nor = imtophat(im_nor,strel('disk', 90));
+else
+    im_nor = imtophat(im_nor1,strel('disk', 90));
+end
 
 % Histogram equalization
 if parameters.adapthist == true

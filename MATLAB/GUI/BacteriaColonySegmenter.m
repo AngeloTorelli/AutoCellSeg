@@ -139,7 +139,9 @@ function addImages_Callback(hObject, eventdata, handles)
     if isequal(filename,0)
        disp('User selected Cancel')
     else
-        handles = resetGUI(hObject, eventdata, handles);        
+        handles = resetGUI(hObject, eventdata, handles);
+        set(handles.addImages,'Enable','off') 
+        set(handles.addDir,'Enable','off')
         if iscellstr(filename) == 0
             filename = cellstr(filename);
         end
@@ -152,6 +154,8 @@ function addImages_Callback(hObject, eventdata, handles)
 
         processRadioButtons_SelectionChangedFcn(hObject, eventdata, handles);
         
+        set(handles.addImages,'Enable','on') 
+        set(handles.addDir,'Enable','on')
         set(handles.resetButton,'Enable','on')    
         guidata(hObject, handles)
     end    
@@ -168,6 +172,8 @@ function addDir_Callback(hObject, eventdata, handles)
        disp('User selected Cancel')
     else
         handles = resetGUI(hObject, eventdata, handles);
+        set(handles.addImages,'Enable','off') 
+        set(handles.addDir,'Enable','off')
         % Specifiying image type and reading directory
         if ismac
             handles.imgtypes = ['JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
@@ -202,6 +208,9 @@ function addDir_Callback(hObject, eventdata, handles)
         handles.data = data;
         handles = visualizeData(hObject, eventdata, handles);
         processRadioButtons_SelectionChangedFcn(hObject, eventdata, handles);
+        
+        set(handles.addImages,'Enable','on') 
+        set(handles.addDir,'Enable','on')
         set(handles.resetButton,'Enable','on')
         guidata(hObject, handles)
     end    
@@ -420,8 +429,15 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
     handles.aborted = false;
     switch correctionSel
         case 'Fast marching'
-            
-            title('Please click on the center of each colony in this image.');
+
+            processSel = get(handles.processRadioButtons, 'SelectedObject');
+            processSel = get(processSel,'String');
+            switch processSel
+                case 'Fully automated'
+                    title('When selecting please click on the center of the colony.')
+                otherwise
+                    title('Please click on the center of each colony in this image.')
+            end
             try
                 
                 [x,y,~]          = impixel;
@@ -442,7 +458,7 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
                 handles.aborted = true;
             end
         case 'Ellipse'
-            title('Please click and drag to mark the circumference of each colony. Double click inside the ellipse to confirm or press escape to finish.');
+            title('Please click and drag to mark the circumference of each colony. Double click inside the ellipse to confirm or press escape to finish.')
             while 1
                 h = imellipse;
                 wait(h);
@@ -518,6 +534,7 @@ function handles = visualizeData(hObject, eventdata, handles)
             end
             updatePageText(hObject, eventdata, handles);
         end
+        multipage = false;
         if isfield(handles, 'iImg') == 1
             num_img = handles.maxNum;
             if num_img > 12
@@ -525,6 +542,9 @@ function handles = visualizeData(hObject, eventdata, handles)
                 y = 4;
                 if num_img > 16
                     y = 5;
+                    if num_img > 20
+                        multipage = true;
+                    end
                 end
             elseif num_img > 6
                 x = 3;
@@ -549,7 +569,7 @@ function handles = visualizeData(hObject, eventdata, handles)
             set(handles.nextPicButton, 'Enable', 'Off')
             set(handles.prevPicButton, 'Enable', 'Off')
             for i  = handles.maxPics*handles.iImg+1 : ...
-                     min(num_img, handles.maxPics*(handles.iImg+1))
+                    min(num_img, handles.maxPics*(handles.iImg+1))
                 if isempty(handles.imgs{i})
                     if ~isdeployed
                         handles.imgs{i} = imread(handles.data(i).name);
@@ -560,25 +580,46 @@ function handles = visualizeData(hObject, eventdata, handles)
                 ii = i - handles.iImg*handles.maxPics;
                 if num_img == 1
                     handles.indexImg = 1;
-                    imshow(handles.imgs{i});  
-                else        
+                    imshow(handles.imgs{i});
+                else
                     subplot(x,y,ii);
-                    a = subimage(handles.imgs{i}); 
-                    set(a,'ButtonDownFcn', {@(u,v)singlePicture(u, v, handles.figure1, i)});   
-                    set(handles.instructions, 'String', ...
+                    a = subimage(handles.imgs{i});
+                    set(a,'ButtonDownFcn', {@(u,v)singlePicture(u, v, handles.figure1, i)});
+                    if multipage & isempty(handles.imgs{handles.maxNum})
+                        set(handles.instructions, 'String', ...
                         ['Please wait while all the pictures are loaded (' ...
-                          num2str(min(100, ((ii+1)/min(num_img, handles.maxPics)*100))) '%)'])
+                        num2str(i/handles.maxNum*100) '%)'])
+                    else
+                        set(handles.instructions, 'String', ...
+                            ['Please wait while all the pictures are loaded (' ...
+                            num2str(min(100, ((ii)/min(num_img- handles.iImg*handles.maxPics, handles.maxPics)*100))) '%)'])
+                    end
                 end
                 set(gca,'visible','off');
                 title(['\color{white}' handles.data(i).name]);
                 set(findall(gca, 'type', 'text'), 'visible', 'on')
-                drawnow();    
+                drawnow();
+            end
+            if multipage & isempty(handles.imgs{handles.maxNum})
+                for i  = 21 : handles.maxNum
+                    if isempty(handles.imgs{i})
+                        if ~isdeployed
+                            handles.imgs{i} = imread(handles.data(i).name);
+                        else
+                            handles.imgs{i} = imread([handles.fName '\' handles.data(i).name]);
+                        end
+                    end
+                    set(handles.instructions, 'String', ...
+                    ['Please wait while all the pictures are loaded (' ...
+                    num2str(i/handles.maxNum*100) '%)'])
+                    drawnow();
+                end
             end
             set(gcf,'pointer','arrow')
             if handles.iImg == 0
                 set(handles.prevPicButton, 'Enable', 'Off')
             else
-                set(handles.prevPicButton, 'Enable', 'On') 
+                set(handles.prevPicButton, 'Enable', 'On')
             end
             if handles.iImg == handles.maxiImg-1
                 set(handles.nextPicButton, 'Enable', 'Off')
@@ -920,6 +961,10 @@ function handles = resetGUI(hObject, eventdata, handles)
     end        
     set(handles.prevPicButton, 'Enable', 'Off')
     set(handles.nextPicButton, 'Enable', 'Off')
+    set(handles.showresultsbutton,'Enable','off')
+    set(handles.saveButton,'Enable','off')
+    set(handles.runButton,'Enable','off')
+    set(handles.resetButton,'Enable','off')
     
     
     if ~isdeployed
@@ -968,7 +1013,9 @@ function runButton_Callback(hObject, eventdata, handles)
     handles = checkProcessRadioButtons(hObject, eventdata, handles);
     if ~handles.aborted
         set(handles.runButton,'Enable','off')
-        set(handles.showresultsbutton,'Enable','on')
+        if handles.ctrlen > 0 & handles.lgtlen > 0 | ~isempty(handles.inds{1})
+            set(handles.showresultsbutton,'Enable','on')
+        end
         set(handles.saveButton,'Enable','on') 
     end
     guidata(hObject, handles)
@@ -981,10 +1028,6 @@ function resetButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
     handles = resetGUI(hObject, eventdata, handles);
     set(gcf,'pointer','arrow')
-    set(handles.showresultsbutton,'Enable','off')
-    set(handles.saveButton,'Enable','off')
-    set(handles.runButton,'Enable','off')
-    set(handles.resetButton,'Enable','off')
     set(handles.figure1, 'HandleVisibility', 'off');
     close all;
     set(handles.figure1, 'HandleVisibility', 'on');
@@ -995,26 +1038,33 @@ function saveButton_Callback(hObject, eventdata, handles)
 % hObject    handle to saveButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-    %TODO: CHECK IF IT WORKS ON WINDOWS AND DEPLOYMENT
+    
+    npath   = uigetdir(handles.fName,'Please select the folder to save the results');
     set(handles.instructions, 'String', ...
         'Please wait while the results are being saved. ')
     set(gcf,'pointer','watch')
     featmat = handles.featmat;
     pars    = handles.pars;
     data    = handles.data;
-    npath   = [handles.fName '\results'];
-    if exist(npath, 'dir') ~= 7
-        mkdir(npath)
+    
+    if ismac
+        separator = '/';
+    elseif isunix
+        separator = '/';
+    elseif ispc
+        separator = '\';
+    else
+        disp('Platform not supported')
     end
+    
     %% Write segmented images to '\results' directory
     for i = 1:length(handles.imgs)
-        imwrite(handles.BW{i}, [handles.fName '\results\' data(i).name(1:end - 4) '_mask.jpg'], 'jpg')
-        imwrite(handles.ov{i}, [handles.fName '\results\' data(i).name(1:end - 4) '_seg.jpg'], 'jpg')
+        imwrite(handles.BW{i}, [npath separator data(i).name(1:end - 4) '_mask.jpg'], 'jpg')
+        imwrite(handles.ov{i}, [npath separator data(i).name(1:end - 4) '_seg.jpg'], 'jpg')
     end
     
     %% Write colony features to text file
-    fileID = fopen([handles.fName '\results\' 'BacteriaColonySegSummary.txt'],'wt');
+    fileID = fopen([npath separator 'BacteriaColonySegSummary.txt'],'wt');
     fprintf  (fileID,'%30s %10s %9s %11s %15s \n', 'Image name', ...
         'Colony count', 'Mean area', 'Mean radius', 'Mean eccentricity');
     for k = 1 : size(featmat,1)
@@ -1051,15 +1101,16 @@ function saveButton_Callback(hObject, eventdata, handles)
     tableEntries = {'ExperimentNumber', 'ColonyID', 'Size', ...
     'MinorAxisLength', 'Eccentricity', 'MeanIntensity', 'Radius', 'Type'};
     T = array2table(handles.fullmat, 'VariableNames',tableEntries);
-    writetable(T,[handles.fName '\results\' 'BacteriaColonySegFull.csv'])
+    writetable(T,[npath separator 'BacteriaColonySegFull.csv'])
     T1 = struct2table(sumStruct);
-    writetable(T1,[handles.fName '\results\' 'BacteriaColonySegSummary.csv'])
+    writetable(T1,[npath separator 'BacteriaColonySegSummary.csv'])
 
 % --- Executes on button press in showresultsbutton.
 function showresultsbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to showresultsbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
     set(handles.instructions, 'String', ...
             'Please wait while the results are being created (0%)')
         
@@ -1068,9 +1119,13 @@ function showresultsbutton_Callback(hObject, eventdata, handles)
     pars    = handles.pars;
     data    = handles.data;
     
-    fname   = pars.im_name{1}(handles.inds{1}(2):(end-4));
-    namfind = strfind(fname, handles.control);
-    endfind = strfind(fname, [handles.control(end) ' ']);
+    if ~isempty(handles.inds{1})
+        fname   = pars.im_name{1}(handles.inds{1}(2):(end-4));
+        namfind = strfind(fname, handles.control);
+        endfind = strfind(fname, [handles.control(end) ' ']);
+    else
+        fname   = pars.im_name{1};
+    end
     tdata   = length(data);
     bwidth  = pars.bw;
     si1     = 1 ;

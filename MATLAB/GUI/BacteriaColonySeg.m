@@ -2,10 +2,7 @@ function handles = BacteriaColonySeg(hObject, eventdata, handles)
     
     if handles.maxNum == 1
         set(handles.instructions, 'String', ...
-            'Please wait until the algorithm ends.')  
-    else
-        set(handles.instructions, 'String', ...
-            'Please wait while all the pictures are processed (0%)')
+            'Please wait until the algorithm ends.') 
     end
     
     

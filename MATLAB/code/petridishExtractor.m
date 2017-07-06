@@ -44,7 +44,7 @@ function [ exImage, dishcoord ] = petridishExtractor(varargin)
     %% Check all input arguments
     if nargin == 1 
         parameter.distribution = 'exponential';
-        if ~isempty(size(varargin{1},3))
+        if ~isempty(size(varargin{1},3)) && size(varargin{1},3) == 3
             hsv = rgb2hsv(varargin{1});
             v   = hsv(:,:,3);
         else
@@ -68,7 +68,15 @@ function [ exImage, dishcoord ] = petridishExtractor(varargin)
 
     %% Preprocessing of the image
     A           = adapthisteq(v,'Distribution', parameter.distribution);
-    im          = double(mean(A, 3));
+    
+    if ~isempty(size(varargin{1},3)) && size(varargin{1},3) == 3
+        im      = double(mean(A, 3));
+    elseif ~isempty(size(varargin{1},3)) && size(varargin{1},3) == 2
+        im      = double(mean(A, 2));
+    else
+        im      = double(A);
+    end
+    
     [H, W]      = size(im);
     filled      = imfill(im, 'holes');
 
@@ -81,6 +89,7 @@ function [ exImage, dishcoord ] = petridishExtractor(varargin)
     %% Extraction of the biggest blob
     infos       = regionprops('table', BW, 'Area', 'Centroid', ...
                               'MajorAxisLength','MinorAxisLength');
+    if ~isempty(infos)
     index       = find(infos.Area == max(max(infos.Area)));
     maxax       = infos.MajorAxisLength(index);
     minax       = infos.MinorAxisLength(index);
@@ -98,5 +107,9 @@ function [ exImage, dishcoord ] = petridishExtractor(varargin)
     else
         exImage     = true(H, W);
         dishcoord   = [];
+    end
+    else
+        exImage     = true(H, W);
+        dishcoord   = [];        
     end
 end

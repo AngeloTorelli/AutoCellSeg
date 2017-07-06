@@ -41,10 +41,14 @@ end
 %% Preporcessing
 
 % Channel selection
-if parameters.chnnlselect == 0
+if size(image, 3) == 3 & parameters.chnnlselect == 0
     image = double(rgb2gray(image));
 else
-    image = double(image(:,:,parameters.chnnlselect));
+    if ~isempty(size(image,3)) & size(image, 3) >= parameters.chnnlselect
+        image = double(image(:,:,parameters.chnnlselect));
+    else
+        image = double(image(:,:,1));
+    end
 end
 
 % Normalization between 0-1

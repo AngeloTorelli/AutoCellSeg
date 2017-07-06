@@ -22,10 +22,15 @@ function [ im_seg ] = manualAddRem(im_seg, im, pars)
 % Open-Source Project Clausel
 
 %% Handling dimensions of input image
-if pars.chnnlselect == 0
+
+if size(im, 3) == 3 & pars.chnnlselect == 0
     im = double(rgb2gray(im));
 else
-    im = double(im(:,:,pars.chnnlselect));
+    if ~isempty(size(im,3)) & size(im, 3) >= pars.chnnlselect
+        im = double(im(:,:,pars.chnnlselect));
+    else
+        im = double(im(:,:,1));
+    end
 end
 oi.pixrev   = false;
 oi.switch   = 0;

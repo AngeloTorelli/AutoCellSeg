@@ -1,0 +1,13 @@
+                    Image name Colony count Mean area Mean radius Mean eccentricity 
+
+       control 1 603030 24h seg  37 2771.3 29.63 0.24 
+
+       control 2 603030 24h seg  48 1909.0 24.54 0.26 
+
+       control 3 603030 24h seg  55 3072.6 31.19 0.28 
+
+         light 1 603030 24h seg  28 1854.8 24.19 0.28 
+
+         light 2 603030 24h seg  48 2324.9 27.07 0.31 
+
+         light 3 603030 24h seg  40 2375.6 27.41 0.29 

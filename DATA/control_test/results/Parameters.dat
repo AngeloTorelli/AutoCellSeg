@@ -1,0 +1,15 @@
+Border buffer in cropping (in pixels): 10
+Extract petridish? (1 = true / 0 = false): 1
+Average circularity (0(circle) - 1(line)): 0.45
+Gaussian filter size: 5  5
+Segmentation (threshold) (min:step:max): 0.3:0.1:0.97
+Segmentation (watershed) (min:step:max): 0.1:0.01:0.25
+Channel selection (1 = red 2 = green 3 = blue): 2
+Adapting histogram (1 = true / 0 = false): 0
+A-Priori intensity selection (1 = true / 0 = false): 0
+Bandwith for the kde plot: 2000
+Name for control images: control
+Name for test images: light
+Color scheme [R G B]: 1  0  0
+Fast marching threshold (0 - 1): 0.02
+Include edge detection (1 = true / 0 = false): 0

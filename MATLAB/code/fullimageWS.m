@@ -36,7 +36,7 @@ norm_info.switch      = 0;
 for k = 1 : length(bigBind)
     % Cropping
     r      = round(feats(bigBind(k)).BoundingBox);
-    bb     = [r(1)-b r(2)-b r(3)+2*b-1 r(4)+2*b-1];
+    bb     = [max(r(1)-b,1) max(r(2)-b,1) r(3)+2*b-1 r(4)+2*b-1];
     im_tmp = imcrop(image, bb);
     im_tmp = im_norm(im_tmp, [1 99], 'minmax', norm_info, 0);
     imb    = false(size(mask));
@@ -48,7 +48,7 @@ for k = 1 : length(bigBind)
     % Watershed segmentation
     L      = aiwatershed(im_tmp, imb, parameters);
     
-    if max(max(bwlabel(L))) > 0 && sum(sum(L)) > 0.66 * sum(sum(imb))
+    if max(max(bwlabel(L))) > 0 && sum(sum(L)) >= 0.6 * sum(sum(imb))
         [f1, f2] = find(L>0);
         fr       = f1 + bb(2) - 1;
         fc       = f2 + bb(1) - 1;

@@ -1,4 +1,4 @@
-function mask = fastMarchingInd(image, centers, maxDiam)
+function mask = fastMarchingInd(image, centers, maxDiam, fft)
 %MANUALADDREM Allows the user to add new and delete existing bacteria 
 %   colonies manually.
 %   [ IM_SEG ] = MANUALADDREM( IM_SEG, IM_NOR )
@@ -32,14 +32,33 @@ function mask = fastMarchingInd(image, centers, maxDiam)
         yi              = centers(m,1);
         startX          = max(xi-r,1);
         startY          = max(yi-r,1);
-        endX            = startX+d;
-        endY            = startY+d;
+        endX            = min(startX+d, width);
+        endY            = min(startY+d, height);
         crop            = imcrop(image, [startY startX d d]);
-        mask            = false(size(crop));
-        mask(r,r)       = true;
-        grayDiff        = graydiffweight(crop, mask);
-        [mask, ~]       = imsegfmm(grayDiff, mask, 0.02);
-        mask            = imfill(mask,'holes');
+        mask2           = false(size(crop));
+        mask2(min(r,xi),min(r,yi)) = true;
+        grayDiff        = graydiffweight(crop, mask2);
+        [mask, ~]       = imsegfmm(grayDiff, mask2, fft);
+        mask            = imerode(mask,ones(2));
+        clearmask       = imclearborder(mask);
+        if sum(sum(clearmask)) == 0 && sum(sum(mask)) > 2 && mask(min(r,xi),min(r,yi)) == 0
+            mask        = imcomplement(mask);
+            ff          = regionprops(mask, 'Centroid', 'PixelIdxList', 'PixelList');
+            centroids = zeros(length(ff),2);
+            for j = 1: length(ff)
+                centroids(j,1) = ff(j).Centroid(1);
+                centroids(j,2) = ff(j).Centroid(2);
+            end
+            [k2,~] = dsearchn(centroids, [xi,yi]);
+            for i = 1:length(ff)
+                if k2 == i
+                    mask(ff(i).PixelIdxList) = 1;
+                else
+                    mask(ff(i).PixelIdxList) = 0;
+                end
+            end
+        end      
+        mask            = imfill(mask,'holes');  
         maske           = false(size(maskTot));
         if (endX > width)
             endX        = width;

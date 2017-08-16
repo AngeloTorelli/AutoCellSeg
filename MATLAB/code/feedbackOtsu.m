@@ -41,19 +41,20 @@ max = parameters.areavec(4);
 %% Combination of masks generated for each otsu value 
 for i = 1 : length(parameters.otsuvector)
     bw = im2bw(image, parameters.otsuvector(i)); %#ok<*IM2BW>
-    bw = bwpropfilt(bw, 'Area', [min max]);
+    bw = bwpropfilt(bw, 'Area', [min/2 2*max]);
     bw = imfill(bw, 'holes');
-    bw = bwpropfilt(bw, 'Area', [min max]);
+    bw = bwpropfilt(bw, 'Area', [min/2 2*max]);
     bw = imfill(bw, 'holes');
+    bw = imdilate(bw, ones(3));
     
-    if parameters.areavec(2) < 200
-        bw = imopen(bw, strel('disk', ceil(3/parameters.otsuvector(i))));
-    else
-        bw = imopen(bw, strel('disk', ceil(7/parameters.otsuvector(i))));
-    end
+%     if parameters.areavec(2) < 200
+%         bw = imopen(bw, strel('disk', ceil(1/parameters.otsuvector(i))));
+%     else
+%         bw = imopen(bw, strel('disk', ceil(3/parameters.otsuvector(i))));
+%     end
     
     bw = bwpropfilt(bw, 'Eccentricity', [0 0.98]);
-    bw = bwpropfilt(bw, 'Area', [min max]);
+    bw = bwpropfilt(bw, 'Area', [min/2 2*max]);
     I  = I | bw;
 end
 

@@ -1,0 +1,3 @@
+                    Image name Colony count Mean area Mean radius Mean eccentricity 
+
+ AS_09125_040701150004_A02f00d0 seg  78 110.9 5.77 0.56 

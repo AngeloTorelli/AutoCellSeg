@@ -1,0 +1,25 @@
+                    Image name Colony count Mean area Mean radius Mean eccentricity 
+
+ AS_09125_050116000001_A24f00d0_slice1_channel1 seg 157 152.4 6.84 0.53 
+
+ AS_09125_050116000001_A24f00d0_slice2_channel1 seg 289 118.1 5.89 0.57 
+
+ AS_09125_050116000001_A24f00d0_slice3_channel1 seg 260 124.6 6.06 0.58 
+
+ AS_09125_050116000001_A24f00d0_slice4_channel1 seg 164 143.6 6.59 0.56 
+
+ AS_09125_050116000001_A24f00d0_slice5_channel1 seg  65 139.3 6.48 0.59 
+
+ AS_09125_050116000001_A24f00d0_slice6_channel1 seg 145 136.0 6.40 0.55 
+
+ AS_09125_050116000001_L15f00d0_slice1_channel1 seg  62 292.6 9.41 0.57 
+
+ AS_09125_050116000001_L15f00d0_slice2_channel1 seg  95 249.3 8.73 0.57 
+
+ AS_09125_050116000001_L15f00d0_slice3_channel1 seg  68 241.3 8.50 0.57 
+
+ AS_09125_050116000001_L15f00d0_slice4_channel1 seg  43 274.0 9.06 0.53 
+
+ AS_09125_050116000001_L15f00d0_slice5_channel1 seg  71 295.5 9.48 0.58 
+
+ AS_09125_050116000001_L15f00d0_slice6_channel1 seg  43 264.2 9.02 0.63 

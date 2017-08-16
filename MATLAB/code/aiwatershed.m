@@ -71,15 +71,19 @@ if fblob.Eccentricity > parameters.avcellecc*0.75
             for j = 1 : length(feats)
                 mu1   = evalmf(feats(j).Area, ...
                     [parameters.areavec(1) parameters.areavec(2) ...
-                    parameters.areavec(2)*2 ...
-                    max(parameters.areavec(2)*2, ...
-                    parameters.areavec(3))], 'trapmf');
+                    max(parameters.areavec(3), parameters.areavec(2)*2) ...
+                    max(parameters.areavec(3)*2, ...
+                    parameters.areavec(4))], 'trapmf');
                 mu2   = evalmf(feats(j).Eccentricity, [0 .1 .5 .85], ...
                     'trapmf');
                 mu(j) = mu1*mu2;
             end
             
-            mu        = prod(mu);
+            if sum(sum(blob))> 2*parameters.areavec(4)
+                mu    = median(mu);
+            else
+                mu    = prod(mu);
+            end
             mu3       = evalmf(count, [1 ex_n 2*ex_n 3*ex_n-1], 'trapmf');
             y(i)      = (mu*mu3);
         end

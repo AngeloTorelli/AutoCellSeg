@@ -2,6 +2,19 @@
 # Changelog of AutoCellSeg
 Here you can see all the changes made after each commit.
 
+## 1.0.4 (2017-08-18)
+
+Features:
+
+  - Closing dialog when closing AutoCellSeg for avoiding accidental closing.
+
+
+Bugfixes:
+
+  - Creating plots does not create errors anymore.
+  - Closing windows before automatic closing will not close the main window.
+
+
 ## 1.0.3 (2017-07-19)
 
 Features:
@@ -35,7 +48,7 @@ Features:
   - Tooltips for buttons added.
   - Tooltips for long titles added.
   - Interactions with AutoCellSeg are blocked when processing to avoid errors.
-  - Manual selection of color. If a comparison between experiments is possible, the other color becomes the opposite to the selected one.
+  - Manual selection of color. If a comparison between experiments is possible, the other color becomes the inverted to the selected one.
   - Thumbnails are updated to the overlay image after processing and after every correction.
   - Create plots is only available when images of two experiment are loaded properly.
   - The name of the image is displayed when viewing single images.

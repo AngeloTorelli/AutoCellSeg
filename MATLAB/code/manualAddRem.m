@@ -129,7 +129,11 @@ if isfield(handles, 'closing') == 0 || isfield(handles, 'closing') == 1 && ~hand
     for il = 1:length(indices)
         im_seg(ff(indices(il)).PixelIdxList) = 0;
     end
-
+    for in = size(newcentroids,1):-1:1
+        if newcentroids(in,1)==0 && newcentroids(in,2)==0
+            newcentroids(in,:) = [];
+        end
+    end
     handles.BW{handles.indexImg} = im_seg;
     %close(gcf)
 

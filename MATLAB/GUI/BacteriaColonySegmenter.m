@@ -22,7 +22,7 @@ function varargout = BacteriaColonySegmenter(varargin)
 
 % Edit the above text to modify the response to help BacteriaColonySegmenter
 
-% Last Modified by GUIDE v2.5 05-Jul-2017 13:25:31
+% Last Modified by GUIDE v2.5 17-Aug-2017 14:50:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -106,6 +106,39 @@ function varargout = BacteriaColonySegmenter_OutputFcn(hObject, eventdata, handl
 % handles    structure with handles and user data (see GUIDATA)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if isfield(handles, 'imgs') == 1
+    selection = questdlg('Do you wish to close AutoCellSeg?',...
+        'Closing AutoCellSeg',...
+        'Yes','No','Yes');
+    switch selection
+        case 'Yes'
+            nof = findall(0,'type','figure');
+            if length(nof) > 1
+                for i = 1:length(nof)
+                    delete(nof(i));
+                end
+            end
+            delete(hObject);
+        case 'No'
+            return
+    end
+else
+    nof = findall(0,'type','figure');
+    if length(nof) > 1
+        for i = 1:length(nof)
+            delete(nof(i));
+        end
+    end
+    delete(hObject);
+end
+
+
 
 % --- Executes on button press in addImages.
 function addImages_Callback(hObject, eventdata, handles)
@@ -907,6 +940,25 @@ function closeAndRefresh(hObject, eventdata, hGui)
     end
     
     
+    
+function closeResults(hObject, eventdata, hGui)
+    try
+        handles = guidata(hGui); 
+        delete(handles.figure2)
+        
+        nof = findall(0,'type','figure');
+        set(handles.instructions, 'ForegroundColor', [0.984 0.969 0.969]);
+        if length(nof) == 1
+            if isequal(get(handles.instructions, 'String'), 'Please close the other window before opening a new one.')
+                set(handles.instructions, 'String', ...
+                    handles.instructionsText);
+            end
+        end
+    catch ME
+        handlesErrors(hObject, eventdata, handles, ME);
+    end
+    
+    
 function singlePicture(hObject, eventdata, hGui, i)
     try
         switch get(gcf,'SelectionType')
@@ -924,31 +976,31 @@ function singlePicture(hObject, eventdata, hGui, i)
                     set(handles.instructions, 'ForegroundColor', [1 0 0])
                     hObject = handles.output;
                     guidata(hObject, handles);
-                else
-                    hObject = handles.output;
-                    guidata(hObject, handles);
-                    sizeScreen =get(0,'Screensize');
-                    hFigure = figure('name', [handles.data(i).name ' size:' int2str(size(handles.imgs{i},2)) 'x' int2str(size(handles.imgs{i},1))], ...
-                        'NumberTitle','off', 'Position', [0.17*sizeScreen(3) 1 0.83*sizeScreen(3) 0.85*sizeScreen(4)]);
-                    set(hFigure, 'MenuBar', 'none');
-                    set(hFigure, 'ToolBar', 'figure');
-                    handles.figure2 = hFigure;
-                    hObject = handles.output;
-                    guidata(hObject, handles);
-                    %             set(hFigure, 'WindowScrollWheelFcn', @(o,e)doScroll(e));
-                    %             set(hFigure, 'CloseRequestFcn', @(o,e)closeReq(hObject, eventdata,  handles.figure1));
-                    %             set(hFigure, 'WindowButtonDownFcn', @(o,e)clicking(e));
-                    if(isempty(handles.results{1}))
-                        set(hFigure, 'CloseRequestFcn', @(o,e)closeAndRefresh(hObject, eventdata,  handles.figure1));
-                        h = uicontrol('style', 'togglebutton', 'Position', ...
-                            [30 30 200 40],'String', ...
-                            'Zoom', 'Callback', {@doZoom, handles.figure1});
-                    end
-    %                 uiwait(gcf)
-
-    %                 if h.Value == 1
-
+                else        
                     if sum(size(handles.results{1})) == 0
+                        hObject = handles.output;
+                        guidata(hObject, handles);
+                        sizeScreen =get(0,'Screensize');
+                        hFigure = figure('name', [handles.data(i).name ' size:' int2str(size(handles.imgs{i},2)) 'x' int2str(size(handles.imgs{i},1))], ...
+                            'NumberTitle','off', 'Position', [0.17*sizeScreen(3) 1 0.83*sizeScreen(3) 0.85*sizeScreen(4)]);
+                        set(hFigure, 'MenuBar', 'none');
+                        set(hFigure, 'ToolBar', 'figure');
+                        handles.figure2 = hFigure;
+                        hObject = handles.output;
+                        guidata(hObject, handles);
+                        %             set(hFigure, 'WindowScrollWheelFcn', @(o,e)doScroll(e));
+                        %             set(hFigure, 'CloseRequestFcn', @(o,e)closeReq(hObject, eventdata,  handles.figure1));
+                        %             set(hFigure, 'WindowButtonDownFcn', @(o,e)clicking(e));
+                        if(isempty(handles.results{1}))
+                            set(hFigure, 'CloseRequestFcn', @(o,e)closeAndRefresh(hObject, eventdata,  handles.figure1));
+                            h = uicontrol('style', 'togglebutton', 'Position', ...
+                                [30 30 200 40],'String', ...
+                                'Zoom', 'Callback', {@doZoom, handles.figure1});
+                        end
+        %                 uiwait(gcf)
+
+        %                 if h.Value == 1
+
 
                         processSel = get(handles.processRadioButtons, 'SelectedObject');
                         processSel = get(processSel,'String');
@@ -1024,8 +1076,18 @@ function singlePicture(hObject, eventdata, hGui, i)
                             set(findall(gca, 'type', 'text'), 'visible', 'on')
                         end
                     else
+                        hObject = handles.output;
+                        guidata(hObject, handles);
+                        sizeScreen =get(0,'Screensize');
+                        hFigure = figure('name', char(handles.resultsName(i)), 'NumberTitle', ... 
+                            'off', 'Position', [0.17*sizeScreen(3) 1 0.83*sizeScreen(3) 0.85*sizeScreen(4)]);
+                        set(hFigure, 'MenuBar', 'none');
+                        set(hFigure, 'ToolBar', 'figure');
+                        set(hFigure, 'CloseRequestFcn', @(o,e)closeResults(hObject, eventdata,  handles.figure1));
+                        handles.figure2 = hFigure;
+                        hObject = handles.output;
+                        guidata(hObject, handles);
                         imshow(handles.results{i});
-                        impixelinfo;
                         set(gca,'visible','off');
                     end
                     if isfield(handles, 'aborted') == 1 & ~handles.aborted
@@ -1160,7 +1222,10 @@ function handles = showResults(hObject, eventdata, handles)
                 if isfield(handles, 'done') == 0
                     if  isfield(handles, 'running') == 0
                         pause(2);
-                        close(handles.figure2);
+                        nof = findall(0,'type','figure');
+                        if length(nof) > 1
+                            close(handles.figure2);
+                        end
                         set(gcf,'pointer','arrow')
                     end
                 end
@@ -1268,6 +1333,48 @@ function handles = resetGUI(hObject, eventdata, handles)
         if isfield(handles, 'seg_count') == 1
             handles = rmfield(handles, 'seg_count');
         end
+        if isfield(handles, 'filename') == 1
+            handles = rmfield(handles, 'filename');
+        end
+        if isfield(handles, 'indexImg') == 1
+            handles = rmfield(handles, 'indexImg');
+        end
+        if isfield(handles, 'titleLength') == 1
+            handles = rmfield(handles, 'titleLength');
+        end
+        if isfield(handles, 'x') == 1
+            handles = rmfield(handles, 'x');
+        end
+        if isfield(handles, 'y') == 1
+            handles = rmfield(handles, 'y');
+        end
+        if isfield(handles, 'figure2') == 1
+            handles = rmfield(handles, 'figure2');
+        end
+        if isfield(handles, 'aborted') == 1
+            handles = rmfield(handles, 'aborted');
+        end
+        if isfield(handles, 'minInten') == 1
+            handles = rmfield(handles, 'minInten');
+        end
+        if isfield(handles, 'minIntenInd') == 1
+            handles = rmfield(handles, 'minIntenInd');
+        end
+        if isfield(handles, 'maxInten') == 1
+            handles = rmfield(handles, 'maxInten');
+        end
+        if isfield(handles, 'maxIntenInd') == 1
+            handles = rmfield(handles, 'maxIntenInd');
+        end
+        if isfield(handles, 'minAreaInd') == 1
+            handles = rmfield(handles, 'minAreaInd');
+        end
+        if isfield(handles, 'maxAreaInd') == 1
+            handles = rmfield(handles, 'maxAreaInd');
+        end
+        if isfield(handles, 'Ifeat') == 1
+            handles = rmfield(handles, 'Ifeat');
+        end
         set(handles.addImages,'Enable','on')
         set(handles.addDir,'Enable','on')
         set(handles.prevPicButton, 'Enable', 'Off')
@@ -1320,8 +1427,9 @@ function handles = resetFigure(hObject, eventdata, handles)
                 delete(c(i))
             end
         end
-        set(handles.instructions, 'String', ...
-            'Welcome to AutoCellseg. ')
+        
+        set(handles.instructions, 'ForegroundColor', [0.984 0.969 0.969], ...
+            'String', 'Welcome to AutoCellseg. ')
         
         hObject = handles.output;
         guidata(hObject, handles)
@@ -1610,18 +1718,12 @@ try
     legend(strar, 'Location', 'NorthEast')
     grid on
     
-    % Check if results directory exists
-    npath   = [handles.fName '\results\'];
-    if ~exist(npath, 'dir')
-        mkdir(npath)
-    end
     
     % Save results in handles.results
     screen_size     = get(0, 'ScreenSize');
     fig             = gcf;
     set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
     handles.results{1} = print(fig, '-RGBImage');
-    print(fig, [npath fname  '_kde'], '-dpng');
     handles.resultsName{1} = [fname ' kde.jpg'];
     wfig = gcf;
     if strcmp(wfig.Name, 'AutoCellSeg') == 0
@@ -1834,7 +1936,6 @@ try
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{2} = print(fig, '-RGBImage');
-        print(fig, [npath fname  '_AbsArea'], '-dpng');
         handles.resultsName{2} = [fname ' AbsArea.jpg'];
         wfig = gcf;
         if strcmp(wfig.Name, 'AutoCellSeg') == 0
@@ -1897,7 +1998,6 @@ try
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{3} = print(fig, '-RGBImage');
-        print(fig, [npath fname  '_AbsAreaTo1'], '-dpng');
         handles.resultsName{3} = [fname ' AbsAreaTo1.jpg'];
         wfig = gcf;
         if strcmp(wfig.Name, 'AutoCellSeg') == 0
@@ -1995,7 +2095,6 @@ try
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{4} = print(fig, '-RGBImage');
-        print(fig, [npath fname  '_Count'], '-dpng');
         handles.resultsName{4} = [fname ' Count.jpg'];
         wfig = gcf;
         if strcmp(wfig.Name, 'AutoCellSeg') == 0
@@ -2417,3 +2516,6 @@ function handlesErrors(hObject, eventdata, handles, errorObj)
         errordlg(getReport(errorObj,'extended','hyperlinks','off'),'Error');
         error('AutoCellSegError');
     end
+
+
+

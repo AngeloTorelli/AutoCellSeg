@@ -145,21 +145,25 @@ function addImages_Callback(hObject, eventdata, handles)
 % hObject    handle to addImages (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    nof = findall(0,'type','figure');
+    if length(nof) > 1
+        delete(handles.figure2);
+    end
     try
         set(handles.addImages,'Value', 0);
         if ismac
             [filename, handles.fName] = uigetfile( ...
-                {'*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
+                {'*.JPEG;*.jpeg;*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
                 'Graphic Files (*.jpg,*.png,*.bmp,*.tif)'}, 'Select an image', ...
                 'MultiSelect', 'on');
         elseif isunix
             [filename, handles.fName] = uigetfile( ...
-                {'*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
+                {'*.JPEG;*.jpeg;*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
                 'Graphic Files (*.jpg,*.png,*.bmp,*.tif)'}, 'Select an image', ...
                 'MultiSelect', 'on');
         elseif ispc
             [filename, handles.fName] = uigetfile( ...
-                {'*.jpg;*.png;*.tif;*.bmp',...
+                {'*.jpeg;*.jpg;*.png;*.tif;*.bmp',...
                 'Graphic Files (*.jpg,*.png,*.bmp,*.tif)'}, 'Select an image', ...
                 'MultiSelect', 'on');
         else
@@ -200,6 +204,10 @@ function addDir_Callback(hObject, eventdata, handles)
 % hObject    handle to addDir (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    nof = findall(0,'type','figure');
+    if length(nof) > 1
+        delete(handles.figure2);
+    end
     try
         set(handles.addDir,'Value', 0);
         handles.fName = uigetdir();
@@ -211,11 +219,11 @@ function addDir_Callback(hObject, eventdata, handles)
             set(handles.addDir,'Enable','off')
             % Specifiying image type and reading directory
             if ismac
-                handles.imgtypes = ['JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
+                handles.imgtypes = ['JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
             elseif isunix
-                handles.imgtypes = ['JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
+                handles.imgtypes = ['JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
             elseif ispc
-                handles.imgtypes = ['jpg';'png';'tif';'bmp'];
+                handles.imgtypes = ['jpeg';'jpg';'png';'tif';'bmp'];
             else
                 disp('Platform not supported')
             end
@@ -411,16 +419,23 @@ function handles = checkProcessRadioButtons(hObject, eventdata, handles)
                                         '. \rm Left click adds cells, right click removes cells and middle click updates.'])
                             handles = manualAddRem(handles.figure1);
                         end
-                        handles.running = false;
-                        hObject = handles.output;
-                        guidata(hObject, handles)
-                        handles = showResults(hObject, eventdata, handles);
-                        set(gcf,'pointer','arrow')
+                        handles = guidata(handles.figure1);
+                        if ~handles.aborted
+                            handles.running = false;
+                            hObject = handles.output;
+                            guidata(hObject, handles)
+                            handles = showResults(hObject, eventdata, handles);
+                            set(gcf,'pointer','arrow')
 
-                        title('This is the end result for now. Close the windows to continue.')
-                        waitfor(hFigure);
+                            title('This is the end result for now. Close the windows to continue.')
+                            waitfor(hFigure);
+                        else
+                            break;
+                        end
                     end
-                    handles.done = true;
+                    if ~handles.aborted
+                        handles.done = true;
+                    end
                 end
                 hObject = handles.output;
                 guidata(hObject, handles);
@@ -439,7 +454,11 @@ function handles = checkProcessRadioButtons(hObject, eventdata, handles)
                         hObject = handles.output;
                         guidata(hObject, handles)
                         set(hFigure, 'CloseRequestFcn', @(o,e)closeReq(hObject, eventdata,  handles.figure1));
-                        imshow(handles.imgs{i});
+                        if isempty(handles.ov{i})
+                            imshow(handles.imgs{i});
+                        else
+                            imshow(handles.ov{i});
+                        end
                         set(hFigure, 'MenuBar', 'none');
                         set(hFigure, 'ToolBar', 'figure');
                         h = uicontrol('style', 'togglebutton', 'Position', ...
@@ -478,23 +497,32 @@ function handles = checkProcessRadioButtons(hObject, eventdata, handles)
                             title(['The result is \it n = ' num2str(max(max(bwlabel(handles.BW{i})))) ...
                                         '. \rm Left click adds cells, right click removes cells and middle click updates.'])
                             handles = manualAddRem(handles.figure1);
+                            handles = showResults(hObject, eventdata, handles);
                         end
-                        handles = showResults(hObject, eventdata, handles);
-                        handles.running = false;
-                        hObject = handles.output;
-                        guidata(hObject, handles)
-                        set(gcf,'pointer','arrow')
-                        feats = regionprops(handles.BW{i}, handles.norImg{i}, {'Area'});
-                        handles.areavec{i} = [feats.Area];
-                        if  sum(sum(handles.BW{handles.indexImg})) > 0
-                            handles.seg_count{i} = max(max(bwlabel(handles.BW{i})));
+                        handles = guidata(handles.figure1);
+                        if ~handles.aborted
+                            handles = showResults(hObject, eventdata, handles);
+                            handles.running = false;
+                            hObject = handles.output;
+                            guidata(hObject, handles)
+                            set(gcf,'pointer','arrow')
+                            feats = regionprops(handles.BW{i}, handles.norImg{i}, {'Area'});
+                            handles.areavec{i} = [feats.Area];
+                            if  sum(sum(handles.BW{handles.indexImg})) > 0
+                                handles.seg_count{i} = max(max(bwlabel(handles.BW{i})));
+                            else
+                                handles.seg_count{i} = 0;
+                            end
+                            title('This is the end result for now. Close the windows to continue.')
+                            waitfor(hFigure);
                         else
-                            handles.seg_count{i} = 0;
+                            break;
                         end
-                        title('This is the end result for now. Close the windows to continue.')
-                        waitfor(hFigure);
+                    
                     end
-                    handles.done = true;
+                    if ~handles.aborted
+                        handles.done = true;
+                    end
                 end
         end
         if handles.aborted
@@ -573,10 +601,15 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
                     otherwise
                         title('Please mark a small and a big colony. For more information hover over the Ellipse radio button.');
                 end
+                
                 while 1
-                    h = imellipse;
-                    wait(h);
-                    if isempty(h)
+                    try
+                        h = imellipse;
+                        wait(h);
+                    catch
+                        continue
+                    end
+                    if isempty(h) || ~isvalid(h)
                         break
                     else
                         BW = createMask(h);
@@ -601,9 +634,17 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
                 end
 
                 while 1
-                    h = imfreehand;
-                    wait(h);
-                    if isempty(h)
+                    try
+                        h = imfreehand;
+                        if isempty(h.getPosition)
+                            continue
+                        else
+                            wait(h);
+                        end
+                    catch
+                        break
+                    end
+                    if isempty(h) || ~isvalid(h)
                         break
                     else
                         BW = createMask(h);
@@ -617,6 +658,9 @@ function handles = checkCorrectionRadioButtons(hObject, eventdata, handles)
                         guidata(hObject, handles)
                     end
                 end
+        end
+        if ~exist('BW','var')
+            handles.aborted = true;
         end
 
         if ~handles.aborted
@@ -842,6 +886,9 @@ function closeReq(hObject, eventdata, hGui)
                 'Yes','No','Yes');
             switch selection
                 case 'Yes'
+                    handles.aborted = true;
+                    hObject = handles.output;
+                    guidata(hObject, handles)
                     delete(handles.figure2)
                     set(gcf,'pointer','arrow')
                     set(handles.runButton,'Enable','on')
@@ -1033,13 +1080,16 @@ function singlePicture(hObject, eventdata, hGui, i)
                                         handles = showResults(hObject, eventdata, handles);
                                         currentState = enableDisableFig(handles.figure1, 'on');
                                     otherwise
-                                        impixelinfo;                                    
+                                        if isfield(handles, 'done') == 0 && strcmp(processSel, 'Fully automated') == 1
+                                            impixelinfo;                                    
+                                        end
                                 end
                                 if isfield(handles, 'done') == 1 && handles.done && isfield(handles, 'aborted') == 1 && ~handles.aborted
                                     figure(hFigure);
                                     title(['The result is \it n = ' num2str(max(max(bwlabel(handles.BW{i})))) ...
                                         '. \rm Left click adds cells, right click removes cells and middle click updates.'])
                                     handles = manualAddRem(handles.figure1);
+                                    handles = showResults(hObject, eventdata, handles);
                                     %                             title(['\it n = ' num2str(max(max(bwlabel(handles.BW{i}))))])
                                     wfig = gcf;
                                     if strcmp(wfig.Name, 'AutoCellSeg') == 1
@@ -1115,7 +1165,11 @@ function handles = createOverlay(hObject, eventdata, handles)
         elseif strcmp(handles.strarray{i}, handles.test) == 1
             colour = handles.pars.Color;
         elseif strcmp(handles.strarray{i}, handles.control) == 1
-            colour = [1 1 1] - handles.pars.Color;
+            if handles.ctrlen == handles.lgtlen
+                colour = [1 1 1] - handles.pars.Color;
+            else
+                colour = handles.pars.Color;
+            end
         else
             colour = handles.pars.Color;
         end
@@ -1442,6 +1496,11 @@ function runButton_Callback(hObject, eventdata, handles)
 % hObject    handle to nextPicButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    nof = findall(0,'type','figure');
+    if length(nof) > 1
+        delete(handles.figure2);
+    end
+    
     try
         set(handles.runButton,'Enable','off')
         set(handles.addImages,'Enable','off')
@@ -1469,6 +1528,10 @@ function resetButton_Callback(hObject, eventdata, handles)
 % hObject    handle to resetButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    nof = findall(0,'type','figure');
+    if length(nof) > 1
+        delete(handles.figure2);
+    end
     try
         handles = resetGUI(hObject, eventdata, handles);
         set(gcf,'pointer','arrow')
@@ -2168,8 +2231,14 @@ function optionbutton_Callback(hObject, eventdata, handles)
     % hObject    handle to optionbutton (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
+    nof = findall(0,'type','figure');
+    if length(nof) > 1
+        delete(handles.figure2);
+    end
     try
-        color = handles.pars.Color;
+        color   = handles.pars.Color;
+        control = handles.control;
+        test    = handles.test;
         pr = {'Border buffer in cropping (in pixels)', ...
             'Extract petridish? (true / false)', ...
             'Average circularity (0(circle) - 1(line))', ...
@@ -2225,6 +2294,18 @@ function optionbutton_Callback(hObject, eventdata, handles)
             if isfield(handles, 'filename') == 1
                 handles = extractNames(hObject, eventdata, handles);
             end
+            if ~isequal(control, handles.control) || ~isequal(test, handles.test)
+                handles = createOverlays(hObject, eventdata, handles);
+                handles = visualizeData(hObject, eventdata, handles);                
+            end
+            if handles.ctrlen > 0 && handles.lgtlen > 0 && ...
+                    handles.ctrlen == handles.lgtlen && ... 
+                    (handles.ctrlen + handles.lgtlen) == handles.maxNum && ...
+                    isfield(handles, 'done') == 1 && handles.done
+                set(handles.showresultsbutton,'Enable','on')                
+            else
+                set(handles.showresultsbutton,'Enable','off')                
+            end
             if ~isequal(color, handles.pars.Color)
                 if isfield(handles, 'BW') == 1
                     test = true;
@@ -2252,6 +2333,10 @@ function loadoptions_Callback(hObject, eventdata, handles)
 % hObject    handle to loadoptions (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    nof = findall(0,'type','figure');
+    if length(nof) > 1
+        delete(handles.figure2);
+    end
     try
         if ismac
             [filename, folder] = uigetfile( ...
@@ -2336,34 +2421,65 @@ function handles = BacteriaColonySeg(hObject, eventdata, handles)
         pars.areavec     = [0.5*minArea minArea maxArea 2*maxArea];
         pars.Ifeat       = handles.Ifeat;
 
-        %% Image analysis loop for each image
-        for i = 1 : length(handles.imgs)
-            pars.feats       = {'Area', 'MinorAxisLength', ...
-                'MeanIntensity', 'Eccentricity', 'Radius'};
+        processSel = get(handles.processRadioButtons, 'SelectedObject');
+        processSel = get(processSel,'String');
+        switch processSel
+            case 'Fully automated'
+                %% Image analysis loop for each image
+                for i = 1 : length(handles.imgs)
+                    pars.feats       = {'Area', 'MinorAxisLength', ...
+                        'MeanIntensity', 'Eccentricity', 'Radius'};
 
-            handles.indexImg  = i;
-            im                = handles.imgs{i};
-            pars.im_name{i}   = handles.data(i).name;
-            pars.spmask       = false(size(im,1), size(im,2));
-            handles.pars = pars;
-            handles           = CellSeg(handles);
-            preSelectInfo     = regionprops(handles.BW{handles.indexImg}, ...
-                'Area', 'MajorAxisLength', 'PixelIdxList', 'Eccentricity');
-            % Keeping the originally selected segments
-            for newind = 1 : length(preSelectInfo)
-                if length(find(handles.BW{handles.indexImg}(preSelectInfo(newind).PixelIdxList)==1)) ...
-                        < 0.1*length(preSelectInfo(newind).PixelIdxList)
-                    handles.BW{handles.indexImg}(preSelectInfo(newind).PixelIdxList) = 1;
+                    handles.indexImg  = i;
+                    im                = handles.imgs{i};
+                    pars.im_name{i}   = handles.data(i).name;
+                    pars.spmask       = false(size(im,1), size(im,2));
+                    handles.pars = pars;
+                    handles           = CellSeg(handles);
+                    preSelectInfo     = regionprops(handles.BW{handles.indexImg}, ...
+                        'Area', 'MajorAxisLength', 'PixelIdxList', 'Eccentricity');
+                    % Keeping the originally selected segments
+                    for newind = 1 : length(preSelectInfo)
+                        if length(find(handles.BW{handles.indexImg}(preSelectInfo(newind).PixelIdxList)==1)) ...
+                                < 0.1*length(preSelectInfo(newind).PixelIdxList)
+                            handles.BW{handles.indexImg}(preSelectInfo(newind).PixelIdxList) = 1;
+                        end
+                    end
+                    if handles.maxNum > 1
+                        set(handles.instructions, 'String', ...
+                            ['Please wait while all the pictures are processed (' ...
+                            num2str(min(100, handles.indexImg/size(handles.imgs, 2)*100)) '%)'])
+                        hObject = handles.output;
+                        guidata(hObject, handles);
+                        drawnow();
+                    end
                 end
-            end
-            if handles.maxNum > 1
-                set(handles.instructions, 'String', ...
-                    ['Please wait while all the pictures are processed (' ...
-                    num2str(min(100, handles.indexImg/size(handles.imgs, 2)*100)) '%)'])
-                hObject = handles.output;
-                guidata(hObject, handles);
-                drawnow();
-            end
+            case 'Partially automated'
+                pars.feats       = {'Area', 'MinorAxisLength', ...
+                    'MeanIntensity', 'Eccentricity', 'Radius'};
+                i                 = handles.indexImg;
+                im                = handles.imgs{i};
+                pars.im_name{i}   = handles.data(i).name;
+                pars.spmask       = false(size(im,1), size(im,2));
+                handles.pars = pars;
+                handles           = CellSeg(handles);
+                preSelectInfo     = regionprops(handles.BW{handles.indexImg}, ...
+                    'Area', 'MajorAxisLength', 'PixelIdxList', 'Eccentricity');
+                % Keeping the originally selected segments
+                for newind = 1 : length(preSelectInfo)
+                    if length(find(handles.BW{handles.indexImg}(preSelectInfo(newind).PixelIdxList)==1)) ...
+                            < 0.1*length(preSelectInfo(newind).PixelIdxList)
+                        handles.BW{handles.indexImg}(preSelectInfo(newind).PixelIdxList) = 1;
+                    end
+                end
+                if handles.maxNum > 1
+                    set(handles.instructions, 'String', ...
+                        ['Please wait while all the pictures are processed (' ...
+                        num2str(min(100, handles.indexImg/size(handles.imgs, 2)*100)) '%)'])
+                    hObject = handles.output;
+                    guidata(hObject, handles);
+                    drawnow();
+                end
         end
         hObject = handles.output;
         guidata(hObject, handles);
@@ -2507,15 +2623,18 @@ function handles = process(hObject, eventdata, handles)
     end
     
 function handlesErrors(hObject, eventdata, handles, errorObj)
-    currentState = enableDisableFig(handles.figure1, 'on');
-    handles = resetGUI(hObject, eventdata, handles);
-    set(gcf,'pointer','arrow')
-    hObject = handles.output;
-    guidata(hObject, handles)
-    if ~strcmp(errorObj.message, 'AutoCellSegError')
-        errordlg(getReport(errorObj,'extended','hyperlinks','off'),'Error');
-        error('AutoCellSegError');
+    if ~strcmp(errorObj.message, 'AutoCellSegError')  
+        nof = findall(0,'type','figure');        
+        if length(nof) > 1
+            for i = 1:length(nof)
+               delete(nof(i));
+            end
+        end
+        clearvars -except errorObj;
+        BacteriaColonySegmenter;      
+        waitfor(errordlg(getReport(errorObj,'extended','hyperlinks','off'),'Error'));
     end
+    error('AutoCellSegError');
 
 
 

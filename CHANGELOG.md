@@ -2,6 +2,25 @@
 # Changelog of AutoCellSeg
 Here you can see all the changes made after each commit.
 
+## 1.0.5 (2017-08-24)
+
+Features:
+
+  - Raising Errors will close the possible additional image window that was open to recreate a clean state.
+  - Changing the name options of test and control iamges after running a process will allow the user to create plots if all the requirements are met.
+  - Inverted color in control images are only used if there are also test images.
+  - Manual labeling is now possible after a process is completed.
+  - Freehand and ellipse drawing work without problem when used with the zoom function.
+  - The file format jpeg is also supported.
+
+Bugfixes:
+
+  - Aborting when creating a ellipse or a freehand drawing will not crash AutoCellSeg.
+  - Partially Automated works as supposed now.
+  - Impixelinfo will not interfere with corrections.
+  - When viewing an image and clicking a button, it will close the window and continue.
+
+
 ## 1.0.4 (2017-08-18)
 
 Features:
@@ -12,7 +31,7 @@ Features:
 Bugfixes:
 
   - Creating plots does not create errors anymore.
-  - Closing windows before automatic closing will not close the main window.
+  - Closing image window before automatic closing will not close the main window.
 
 
 ## 1.0.3 (2017-07-19)

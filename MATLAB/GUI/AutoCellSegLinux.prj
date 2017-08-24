@@ -1,9 +1,9 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="2617667170" file="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux.prj" location="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI" name="AutoCellSegLinux" preferred-package-location="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_redistribution" preferred-package-type="package.type.install" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="1626874139" file="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux.prj" location="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI" name="AutoCellSegLinux" preferred-package-location="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_redistribution" preferred-package-type="package.type.install" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>AutoCellSeg</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>1.04</param.version>
+    <param.version>1.05</param.version>
     <param.authnamewatermark>Arif ul Maula Khan &amp; Angelo Torelli</param.authnamewatermark>
     <param.email>ArifulMaula.Khan@medma.uni-heidelberg.de; Angelo.Torelli@medma.uni-heidelberg.de</param.email>
     <param.company>Medical Research Center (ZMF)</param.company>

@@ -2,6 +2,19 @@
 # Changelog of AutoCellSeg
 Here you can see all the changes made after each commit.
 
+## 1.0.6 (2017-08-28)
+
+Features:
+
+  - Mac version updated to the newest version.
+
+Bugfixes:
+
+  - Images with Jpeg format load correctly.
+  - Correction process after fully automated will not lock the preview screen.
+  - When an error raises then the main screen is not locked anymore.
+
+
 ## 1.0.5 (2017-08-24)
 
 Features:

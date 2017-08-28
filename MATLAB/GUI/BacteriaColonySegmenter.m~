@@ -153,17 +153,17 @@ function addImages_Callback(hObject, eventdata, handles)
         set(handles.addImages,'Value', 0);
         if ismac
             [filename, handles.fName] = uigetfile( ...
-                {'*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
+                {'*.JPEG;*.jpeg;*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
                 'Graphic Files (*.jpg,*.png,*.bmp,*.tif)'}, 'Select an image', ...
                 'MultiSelect', 'on');
         elseif isunix
             [filename, handles.fName] = uigetfile( ...
-                {'*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
+                {'*.JPEG;*.jpeg;*.JPG;*.jpg;*.PNG;*.png;*.TIF;*.tif;*.BMP;*.bmp',...
                 'Graphic Files (*.jpg,*.png,*.bmp,*.tif)'}, 'Select an image', ...
                 'MultiSelect', 'on');
         elseif ispc
             [filename, handles.fName] = uigetfile( ...
-                {'*.jpg;*.png;*.tif;*.bmp',...
+                {'*.jpeg;*.jpg;*.png;*.tif;*.bmp',...
                 'Graphic Files (*.jpg,*.png,*.bmp,*.tif)'}, 'Select an image', ...
                 'MultiSelect', 'on');
         else
@@ -219,11 +219,11 @@ function addDir_Callback(hObject, eventdata, handles)
             set(handles.addDir,'Enable','off')
             % Specifiying image type and reading directory
             if ismac
-                handles.imgtypes = ['JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
+                handles.imgtypes = {'JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'};
             elseif isunix
-                handles.imgtypes = ['JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
+                handles.imgtypes = {'JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'};
             elseif ispc
-                handles.imgtypes = ['jpg';'png';'tif';'bmp'];
+                handles.imgtypes = {'jpeg';'jpg';'png';'tif';'bmp'};
             else
                 disp('Platform not supported')
             end
@@ -232,11 +232,11 @@ function addDir_Callback(hObject, eventdata, handles)
 
             if ~isdeployed
                 for di = 1 : size(handles.imgtypes, 1)
-                    data     = [data; dir(['*.' handles.imgtypes(di,:)])]; %#ok<AGROW>
+                    data     = [data; dir(['*.' handles.imgtypes{di,:}])]; %#ok<AGROW>
                 end
             else
                 for di = 1 : size(handles.imgtypes, 1)
-                    data     = [data; dir([handles.fName '\*.' handles.imgtypes(di,:)])]; %#ok<AGROW>
+                    data     = [data; dir([handles.fName '\*.' handles.imgtypes{di,:}])]; %#ok<AGROW>
                 end
             end
             if length(data) == 0
@@ -273,7 +273,7 @@ function handles = extractNames(hObject, eventdata, handles)
         handles.ctrlen = 0;
         handles.lgtlen = 0;
         for i = 1:length(filename)
-            handles.inds{i} = strfind(filename{i}, ' ');
+%             handles.inds{i} = strfind(filename{i}, ' ');
             handles.pars.im_name{i} = filename{i};
             matches = strfind(filename{i}, handles.control);
             if ~isempty(matches)
@@ -1140,7 +1140,7 @@ function singlePicture(hObject, eventdata, hGui, i)
                         imshow(handles.results{i});
                         set(gca,'visible','off');
                     end
-                    if isfield(handles, 'aborted') == 1 & ~handles.aborted
+                    if isfield(handles, 'aborted') == 1 && ~handles.aborted
                         hObject = handles.output;
     %                     handles = visualizeData(hObject, eventdata, handles);
                         guidata(hObject, handles);
@@ -1449,7 +1449,7 @@ function handles = resetGUI(hObject, eventdata, handles)
                 clc
                 datapath  = pwd;
             end
-            %% Datapaths & codepath
+            %% Datapaths and codepath
             
             if isunix
                 addpath(genpath('/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code'))
@@ -1508,8 +1508,8 @@ function runButton_Callback(hObject, eventdata, handles)
         handles = checkProcessRadioButtons(hObject, eventdata, handles);
         if ~handles.aborted
             set(handles.runButton,'Enable','on')
-            if handles.ctrlen > 0 & handles.lgtlen > 0 & ~isempty(handles.inds{1}) & ...
-                    handles.ctrlen == handles.lgtlen & (handles.ctrlen + handles.lgtlen) == handles.maxNum
+            if handles.ctrlen > 0 && handles.lgtlen > 0 && ~isempty(handles.inds{1}) && ...
+                    handles.ctrlen == handles.lgtlen && (handles.ctrlen + handles.lgtlen) == handles.maxNum
                 set(handles.showresultsbutton,'Enable','on')
             end
             set(handles.addImages,'Enable','on')
@@ -2301,7 +2301,7 @@ function optionbutton_Callback(hObject, eventdata, handles)
             if handles.ctrlen > 0 && handles.lgtlen > 0 && ...
                     handles.ctrlen == handles.lgtlen && ... 
                     (handles.ctrlen + handles.lgtlen) == handles.maxNum && ...
-                    handles.
+                    isfield(handles, 'done') == 1 && handles.done
                 set(handles.showresultsbutton,'Enable','on')                
             else
                 set(handles.showresultsbutton,'Enable','off')                

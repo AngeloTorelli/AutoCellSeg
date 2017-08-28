@@ -219,11 +219,11 @@ function addDir_Callback(hObject, eventdata, handles)
             set(handles.addDir,'Enable','off')
             % Specifiying image type and reading directory
             if ismac
-                handles.imgtypes = ['JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
+                handles.imgtypes = {'JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'};
             elseif isunix
-                handles.imgtypes = ['JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'];
+                handles.imgtypes = {'JPEG'; 'jpeg'; 'JPG'; 'jpg'; 'PNG'; 'png'; 'TIF'; 'tif'; 'BMP'; 'bmp'};
             elseif ispc
-                handles.imgtypes = ['jpeg';'jpg';'png';'tif';'bmp'];
+                handles.imgtypes = {'jpeg';'jpg';'png';'tif';'bmp'};
             else
                 disp('Platform not supported')
             end
@@ -232,11 +232,11 @@ function addDir_Callback(hObject, eventdata, handles)
 
             if ~isdeployed
                 for di = 1 : size(handles.imgtypes, 1)
-                    data     = [data; dir(['*.' handles.imgtypes(di,:)])]; %#ok<AGROW>
+                    data     = [data; dir(['*.' handles.imgtypes{di,:}])]; %#ok<AGROW>
                 end
             else
                 for di = 1 : size(handles.imgtypes, 1)
-                    data     = [data; dir([handles.fName '\*.' handles.imgtypes(di,:)])]; %#ok<AGROW>
+                    data     = [data; dir([handles.fName '\*.' handles.imgtypes{di,:}])]; %#ok<AGROW>
                 end
             end
             if length(data) == 0
@@ -274,6 +274,15 @@ function handles = extractNames(hObject, eventdata, handles)
         handles.lgtlen = 0;
         for i = 1:length(filename)
             handles.inds{i} = strfind(filename{i}, ' ');
+            if isempty(handles.inds{i})
+                handles.inds{i} = strfind(filename{i}, '_');
+            end 
+            if isempty(handles.inds{i})
+                handles.inds{i} = strfind(filename{i}, '-');
+            end 
+            if isempty(handles.inds{i})
+                handles.inds{i} = strfind(filename{i}, '+');
+            end 
             handles.pars.im_name{i} = filename{i};
             matches = strfind(filename{i}, handles.control);
             if ~isempty(matches)
@@ -1088,13 +1097,14 @@ function singlePicture(hObject, eventdata, hGui, i)
                                     figure(hFigure);
                                     title(['The result is \it n = ' num2str(max(max(bwlabel(handles.BW{i})))) ...
                                         '. \rm Left click adds cells, right click removes cells and middle click updates.'])
+     
                                     handles = manualAddRem(handles.figure1);
-                                    handles = showResults(hObject, eventdata, handles);
                                     %                             title(['\it n = ' num2str(max(max(bwlabel(handles.BW{i}))))])
                                     wfig = gcf;
                                     if strcmp(wfig.Name, 'AutoCellSeg') == 1
                                         break
                                     end
+                                    handles = showResults(hObject, eventdata, handles);
                                 else
                                     break
                                 end
@@ -1140,7 +1150,7 @@ function singlePicture(hObject, eventdata, hGui, i)
                         imshow(handles.results{i});
                         set(gca,'visible','off');
                     end
-                    if isfield(handles, 'aborted') == 1 & ~handles.aborted
+                    if isfield(handles, 'aborted') == 1 && ~handles.aborted
                         hObject = handles.output;
     %                     handles = visualizeData(hObject, eventdata, handles);
                         guidata(hObject, handles);
@@ -1449,7 +1459,7 @@ function handles = resetGUI(hObject, eventdata, handles)
                 clc
                 datapath  = pwd;
             end
-            %% Datapaths & codepath
+            %% Datapaths and codepath
             
             if isunix
                 addpath(genpath('/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code'))
@@ -1508,8 +1518,8 @@ function runButton_Callback(hObject, eventdata, handles)
         handles = checkProcessRadioButtons(hObject, eventdata, handles);
         if ~handles.aborted
             set(handles.runButton,'Enable','on')
-            if handles.ctrlen > 0 & handles.lgtlen > 0 & ~isempty(handles.inds{1}) & ...
-                    handles.ctrlen == handles.lgtlen & (handles.ctrlen + handles.lgtlen) == handles.maxNum
+            if handles.ctrlen > 0 && handles.lgtlen > 0 && ~isempty(handles.inds{1}) && ...
+                    handles.ctrlen == handles.lgtlen && (handles.ctrlen + handles.lgtlen) == handles.maxNum
                 set(handles.showresultsbutton,'Enable','on')
             end
             set(handles.addImages,'Enable','on')
@@ -1692,9 +1702,13 @@ try
             if~isempty(handles.areavec{i})
                 [f, xi] = ksdensity(handles.areavec{i}, 'width', bwidth);
                 if i < 10
-                    plot(xi,f,cstr{i},'LineWidth',2)
+                    t2 = mod(i,handles.lgtlen);
+                    if t2 == 0
+                        t2 = handles.lgtlen;
+                    end
+                    plot(xi,f,cstr{t2},'LineWidth',2)
                 else
-                    plot(xi,f,cstr{i},'LineWidth',2)
+                    plot(xi,f,cstr{handles.lgtlen},'LineWidth',2)
                 end
                 si1  = si1 + 1;
                 a    = trapz(xi);
@@ -2624,11 +2638,9 @@ function handles = process(hObject, eventdata, handles)
     
 function handlesErrors(hObject, eventdata, handles, errorObj)
     if ~strcmp(errorObj.message, 'AutoCellSegError')  
-        nof = findall(0,'type','figure');        
-        if length(nof) > 1
-            for i = 1:length(nof)
-               delete(nof(i));
-            end
+        nof = findall(0,'type','figure');    
+        for i = 1:length(nof)
+           delete(nof(i));
         end
         clearvars -except errorObj;
         BacteriaColonySegmenter;      

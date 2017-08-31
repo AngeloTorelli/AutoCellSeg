@@ -1464,7 +1464,6 @@ function handles = resetGUI(hObject, eventdata, handles)
             if isunix
                 addpath(genpath('/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code'))
                 addpath(genpath('/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI'))
-                addpath(genpath(datapath))
             elseif ispc
                 addpath('C:\AutoCellSeg\MATLAB\code')
                 addpath('C:\AutoCellSeg\MATLAB\GUI')
@@ -1608,18 +1607,11 @@ function saveButton_Callback(hObject, eventdata, handles)
             fclose(fileID);
 
             % write results to '\results' directory
-            %     if sum(size(handles.results{1})) ~= 0
-            %         fname    = pars.im_name{1}(handles.inds{1}:(end-4));
-            %         indices         = strfind(fname, '\');
-            %         fname(indices)  = [];
-            %         imwrite(handles.results{1}, [handles.fName '\results\' handles.resultsName{1}], 'jpg')
-            %         if handles.maxNum > 1
-            %             imwrite(handles.results{2}, [handles.fName '\results\' handles.resultsName{2}], 'jpg')
-            %             imwrite(handles.results{3}, [handles.fName '\results\' handles.resultsName{3}], 'jpg')
-            %             imwrite(handles.results{4}, [handles.fName '\results\' handles.resultsName{4}], 'jpg')
-            %             imwrite(handles.results{5}, [handles.fName '\results\' handles.resultsName{5}], 'jpg')
-            %         end
-            %     end
+            if sum(size(handles.results{1})) ~= 0                
+                for i = 1:length(handles.results)
+                    imwrite(handles.results{i}, [npath separator handles.resultsName{i}(1:end - 4) '.jpg'], 'jpg')
+                end
+            end
             set(gcf,'pointer','arrow')
             set(handles.instructions, 'String', ...
                 'Thank you for waiting. All the results have been saved.')
@@ -1674,7 +1666,8 @@ try
         namfind = strfind(fname, handles.control);
         endfind = strfind(fname, [handles.control(end) ' ']);
     else
-        fname   = pars.im_name{1};
+        newi = strfind(pars.im_name{1},'.');
+        fname   = pars.im_name{1}(1:newi(end)-1);
     end
     tdata   = length(data);
     bwidth  = pars.bw;
@@ -1801,7 +1794,7 @@ try
     fig             = gcf;
     set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
     handles.results{1} = print(fig, '-RGBImage');
-    handles.resultsName{1} = [fname ' kde.jpg'];
+    handles.resultsName{1} = 'kde.jpg';
     wfig = gcf;
     if strcmp(wfig.Name, 'AutoCellSeg') == 0
         close(gcf);
@@ -1931,7 +1924,7 @@ try
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{5} = print(fig, '-RGBImage');
-        handles.resultsName{5} = [fname ' KDEArea.jpg'];
+        handles.resultsName{5} = 'KDEArea.jpg';
         wfig = gcf;
         if strcmp(wfig.Name, 'AutoCellSeg') == 0
             close(gcf);
@@ -2013,7 +2006,7 @@ try
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{2} = print(fig, '-RGBImage');
-        handles.resultsName{2} = [fname ' AbsArea.jpg'];
+        handles.resultsName{2} = 'Absolute Area.jpg';
         wfig = gcf;
         if strcmp(wfig.Name, 'AutoCellSeg') == 0
             close(gcf);
@@ -2075,7 +2068,7 @@ try
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{3} = print(fig, '-RGBImage');
-        handles.resultsName{3} = [fname ' AbsAreaTo1.jpg'];
+        handles.resultsName{3} = 'Absolute Area To One.jpg';
         wfig = gcf;
         if strcmp(wfig.Name, 'AutoCellSeg') == 0
             close(gcf);
@@ -2172,7 +2165,7 @@ try
         fig             = gcf;
         set(fig, 'Position', [0 0 screen_size(3) screen_size(4)])
         handles.results{4} = print(fig, '-RGBImage');
-        handles.resultsName{4} = [fname ' Count.jpg'];
+        handles.resultsName{4} = 'Count.jpg';
         wfig = gcf;
         if strcmp(wfig.Name, 'AutoCellSeg') == 0
             close(gcf);

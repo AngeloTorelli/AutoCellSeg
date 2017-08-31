@@ -273,7 +273,16 @@ function handles = extractNames(hObject, eventdata, handles)
         handles.ctrlen = 0;
         handles.lgtlen = 0;
         for i = 1:length(filename)
-%             handles.inds{i} = strfind(filename{i}, ' ');
+            handles.inds{i} = strfind(filename{i}, ' ');
+            if isempty(handles.inds{i})
+                handles.inds{i} = strfind(filename{i}, '_');
+            end 
+            if isempty(handles.inds{i})
+                handles.inds{i} = strfind(filename{i}, '-');
+            end 
+            if isempty(handles.inds{i})
+                handles.inds{i} = strfind(filename{i}, '+');
+            end 
             handles.pars.im_name{i} = filename{i};
             matches = strfind(filename{i}, handles.control);
             if ~isempty(matches)
@@ -1088,13 +1097,14 @@ function singlePicture(hObject, eventdata, hGui, i)
                                     figure(hFigure);
                                     title(['The result is \it n = ' num2str(max(max(bwlabel(handles.BW{i})))) ...
                                         '. \rm Left click adds cells, right click removes cells and middle click updates.'])
+     
                                     handles = manualAddRem(handles.figure1);
-                                    handles = showResults(hObject, eventdata, handles);
                                     %                             title(['\it n = ' num2str(max(max(bwlabel(handles.BW{i}))))])
                                     wfig = gcf;
                                     if strcmp(wfig.Name, 'AutoCellSeg') == 1
                                         break
                                     end
+                                    handles = showResults(hObject, eventdata, handles);
                                 else
                                     break
                                 end
@@ -1454,7 +1464,6 @@ function handles = resetGUI(hObject, eventdata, handles)
             if isunix
                 addpath(genpath('/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code'))
                 addpath(genpath('/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI'))
-                addpath(genpath(datapath))
             elseif ispc
                 addpath('C:\AutoCellSeg\MATLAB\code')
                 addpath('C:\AutoCellSeg\MATLAB\GUI')
@@ -1598,18 +1607,11 @@ function saveButton_Callback(hObject, eventdata, handles)
             fclose(fileID);
 
             % write results to '\results' directory
-            %     if sum(size(handles.results{1})) ~= 0
-            %         fname    = pars.im_name{1}(handles.inds{1}:(end-4));
-            %         indices         = strfind(fname, '\');
-            %         fname(indices)  = [];
-            %         imwrite(handles.results{1}, [handles.fName '\results\' handles.resultsName{1}], 'jpg')
-            %         if handles.maxNum > 1
-            %             imwrite(handles.results{2}, [handles.fName '\results\' handles.resultsName{2}], 'jpg')
-            %             imwrite(handles.results{3}, [handles.fName '\results\' handles.resultsName{3}], 'jpg')
-            %             imwrite(handles.results{4}, [handles.fName '\results\' handles.resultsName{4}], 'jpg')
-            %             imwrite(handles.results{5}, [handles.fName '\results\' handles.resultsName{5}], 'jpg')
-            %         end
-            %     end
+            if sum(size(handles.results{1})) ~= 0                
+                for i = 1:length(handles.results)
+                    imwrite(handles.results{i}, [npath separator handles.resultsName{i}(1:end - 4) '.jpg'], 'jpg')
+                end
+            end
             set(gcf,'pointer','arrow')
             set(handles.instructions, 'String', ...
                 'Thank you for waiting. All the results have been saved.')
@@ -1664,7 +1666,8 @@ try
         namfind = strfind(fname, handles.control);
         endfind = strfind(fname, [handles.control(end) ' ']);
     else
-        fname   = pars.im_name{1};
+        newi = strfind(pars.im_name{1},'.');
+        fname   = pars.im_name{1}(1:newi(end));
     end
     tdata   = length(data);
     bwidth  = pars.bw;
@@ -1692,9 +1695,13 @@ try
             if~isempty(handles.areavec{i})
                 [f, xi] = ksdensity(handles.areavec{i}, 'width', bwidth);
                 if i < 10
-                    plot(xi,f,cstr{i},'LineWidth',2)
+                    t2 = mod(i,handles.lgtlen);
+                    if t2 == 0
+                        t2 = handles.lgtlen;
+                    end
+                    plot(xi,f,cstr{t2},'LineWidth',2)
                 else
-                    plot(xi,f,cstr{i},'LineWidth',2)
+                    plot(xi,f,cstr{handles.lgtlen},'LineWidth',2)
                 end
                 si1  = si1 + 1;
                 a    = trapz(xi);
@@ -2624,11 +2631,9 @@ function handles = process(hObject, eventdata, handles)
     
 function handlesErrors(hObject, eventdata, handles, errorObj)
     if ~strcmp(errorObj.message, 'AutoCellSegError')  
-        nof = findall(0,'type','figure');        
-        if length(nof) > 1
-            for i = 1:length(nof)
-               delete(nof(i));
-            end
+        nof = findall(0,'type','figure');    
+        for i = 1:length(nof)
+           delete(nof(i));
         end
         clearvars -except errorObj;
         BacteriaColonySegmenter;      

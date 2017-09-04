@@ -1,17 +1,17 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="1626874139" file="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux.prj" location="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI" name="AutoCellSegLinux" preferred-package-location="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_redistribution" preferred-package-type="package.type.install" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="1626874139" file="/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/GUI/AutoCellSegLinux.prj" location="/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/GUI" name="AutoCellSegLinux" preferred-package-location="/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_redistribution" preferred-package-type="package.type.install" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>AutoCellSeg</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>1.07</param.version>
-    <param.authnamewatermark>Arif ul Maula Khan &amp; Angelo Torelli</param.authnamewatermark>
-    <param.email>ArifulMaula.Khan@medma.uni-heidelberg.de; Angelo.Torelli@medma.uni-heidelberg.de</param.email>
-    <param.company>Medical Research Center (ZMF)</param.company>
+    <param.version>1.08</param.version>
+    <param.authnamewatermark />
+    <param.email />
+    <param.company />
     <param.summary />
     <param.description>AutoCellSeg is a open source tool of the CFU/cell segmentation using a priori knowledge and automatic feedback-based segmentation that allows user to correct the results interactively.</param.description>
     <param.screenshot />
     <param.guid />
-    <param.installpath.string>/Medical_Research_Center_(ZMF)/AutoCellSeg/</param.installpath.string>
+    <param.installpath.string>/AutoCellSeg/</param.installpath.string>
     <param.installpath.combo>option.installpath.user</param.installpath.combo>
     <param.logo />
     <param.install.notes>In the following directions, replace MCR_ROOT by the directory where the MATLAB Runtime is installed on the target machine.
@@ -90,45 +90,43 @@
     </fileset.main>
     <fileset.resources>
       <file>${PROJECT_ROOT}/BacteriaColonySegmenter.fig</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/CellSeg.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/ExtractObjImage.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/ScratchSeg.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/aiwatershed.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/allcomb.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/autodilate.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/autonorm.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/autonorm_regr.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/calc_norm_quality.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/enableDisableFig.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/evalSegmentation.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/fastMarchingInd.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/feateval.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/feedbackOtsu.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/fullimageWS.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/im_norm.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/imoverlay.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/manualAddRem.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/normalize.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/normalize_regr.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/petridishExtractor.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/qualityBacColSeg.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/region_grow.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/removebadBLOBS.m</file>
-      <file>/home/angelo/Documents/Workspace/AutoSeg/MATLAB/code/segment.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/CellSeg.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/ExtractObjImage.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/ScratchSeg.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/aiwatershed.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/allcomb.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/autodilate.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/autonorm.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/autonorm_regr.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/calc_norm_quality.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/enableDisableFig.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/evalSegmentation.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/fastMarchingInd.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/feateval.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/feedbackOtsu.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/fullimageWS.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/im_norm.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/imoverlay.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/manualAddRem.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/normalize.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/normalize_regr.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/petridishExtractor.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/qualityBacColSeg.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/region_grow.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/removebadBLOBS.m</file>
+      <file>/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/code/segment.m</file>
     </fileset.resources>
-    <fileset.package>
-      <file>/home/angelo/Documents/AutoSeg/MATLAB/GUI/AutoSeg.png</file>
-    </fileset.package>
+    <fileset.package />
     <fileset.depfun />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="splash.png" optional="false">/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/splash.png</file>
-      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="AutoCellSeg" optional="false">/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/AutoCellSeg</file>
-      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="readme.txt" optional="true">/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/readme.txt</file>
-      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="run_AutoCellSeg.sh" optional="false">/home/angelo/Documents/Workspace/AutoSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/run_AutoCellSeg.sh</file>
+      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="readme.txt" optional="true">/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/readme.txt</file>
+      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="splash.png" optional="false">/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/splash.png</file>
+      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="run_AutoCellSeg.sh" optional="false">/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/run_AutoCellSeg.sh</file>
+      <file location="${PROJECT_ROOT}/AutoCellSegLinux/for_testing" name="AutoCellSeg" optional="false">/home/angelo/Documents/Workspace/AutoCellSeg/MATLAB/GUI/AutoCellSegLinux/for_testing/AutoCellSeg</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>/usr/local/MATLAB/R2016b</root>
+      <root>/frameworks/MATLAB/R2016b</root>
       <toolboxes>
         <toolbox name="fixedpoint" />
         <toolbox name="matlabcoder" />
@@ -165,7 +163,7 @@
       <vista>false</vista>
       <linux>true</linux>
       <solaris>false</solaris>
-      <osver>4.4.0-93-generic</osver>
+      <osver>4.10.0-33-generic</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>glnxa64</arch>

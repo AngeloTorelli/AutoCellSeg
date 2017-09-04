@@ -1763,7 +1763,8 @@ try
     xlabel('Colony sizes (in pixels)', 'FontSize', 20)
     ylabel('KDE', 'FontSize', 20)
     handles.resultsTitle{1} = [handles.control ' vs. ' handles.test ' (using KDE)'];
-    title([handles.resultsTitle{1} ' for ' num2str(pars.im_name{1}(handles.inds{1}:(end-4)))], 'FontSize', 20)
+    newname = strrep(pars.im_name{1}(handles.inds{1}:(end-4)), '_', '\_');
+    title([handles.resultsTitle{1} ' for ' num2str(newname)], 'FontSize', 20)
     
     % Write the strings for control and test
     ctrind = find(cellfun('length',regexp(handles.strarray,handles.control)) == 1);
@@ -1978,7 +1979,7 @@ try
         end
         set(gca,'XTick', [1 2], 'FontWeight', 'bold', 'FontSize', 20)
         handles.resultsTitle{2} = 'Normalized Absolute Areas';
-        title([handles.resultsTitle{2} ' (' fname ')'])
+        title([handles.resultsTitle{2} ' (' newname ')'])
         
         if ~isempty(LiAA) && ~isempty(CtAA)
             text(t(end), 0.95*max(max(CtAA),max(LiAA)), ['A_C_t_r = ' ...
@@ -2044,7 +2045,7 @@ try
         
         set(gca,'XTick', [1 2], 'FontWeight', 'bold', 'FontSize', 20)
         handles.resultsTitle{3} = 'Absolute Areas Normalized to 1';
-        title([handles.resultsTitle{3} ' (' fname ')'])
+        title([handles.resultsTitle{3} ' (' newname ')'])
         
         if ~isempty(LiAA) && ~isempty(CtAA)
             text(t(2), 0.6, ['MeanVal  = ' ...
@@ -2136,7 +2137,7 @@ try
         
         set(gca,'XTick', [1 2], 'FontWeight', 'bold', 'FontSize', 20)
         handles.resultsTitle{4} = 'Colony Count Comparison';
-        title([handles.resultsTitle{4} ' (' fname ')'])
+        title([handles.resultsTitle{4} ' (' newname ')'])
         
         if ~isempty(aLic) && ~isempty(aCtc)
             text(0.1, 0.75*max(max(aCtc),max(aLic)), ['n_C_t_r = ' ...

@@ -2,6 +2,8 @@
 # AutoCellSeg
 A Matlab implementation for automatic segmentation with a graphical user interface.
 
+Original paper: [AutoCellSeg: robust automatic colony forming unit (CFU)/cell analysis using adaptive image segmentation and easy-to-use post-editing techniques](https://www.nature.com/articles/s41598-018-24916-9 "AutoCellSeg's Paper") (Khan, Torelli, Wolf, Gretz)
+
 ## Installation
 AutoCellSeg can run on all major operating systems. In each, AutoCellSeg can be installed either through a web installer or the user has to download the MATLAB runtime manually first, install it, and then execute the file in the corresponding folder. Please clone this entire project as the first step.
 
